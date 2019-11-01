@@ -19,31 +19,17 @@
 <body>
 <?php
 session_start();
-print_r($_SESSION);
+
 $_SESSION["Check1"]=0;
 $_SESSION["Check2"]=0;
 
-$line = "";
-$file = fopen("Config.txt","r");
-$temp = 0;
+print_r($_SESSION);
+print_r($_GET);
 
-while(! feof($file))
-{
-    if($temp==0){
-        $line = fgets($file);
+include('class.database.php');
 
-    }
-    $line = $line."+".fgets($file);
-    $temp = $temp + 1;
-}
-fclose($file);
-
-$pieces = explode("+",$line);
-$servername = "localhost";
-$username = trim( $pieces[0]);
-$password = trim($pieces[1]);
-$dbname = trim($pieces[2]);
-$conn = new mysqli($servername, $username, $password, $dbname);
+$db = Database::getInstance();
+$conn = $db->getConnection(); 
 
 // Check connection
 if ($conn->connect_error) {
@@ -69,7 +55,7 @@ $conn->close();
 <div id="wrapperC">
 <h2>Take someone for a ride</h2></div>
 <div id="wrapperL">
-<form method="get" action="Setup.php" onsubmit="return onsubmitform();">
+<form type = "post" action="Setup.php" onsubmit="return onsubmitform();">
 <!--<p>This is an experiment on human lying behavior in e-mail communications.</p>-->
     <p>In this study, we investigate how humans can be <b><i>creative at deceiving</i></b> other people through e-mail communications. You will play the role of a computer hacker (an online criminal) who will use phishing attacks to deceive others(take someone for a ride). Hence you will be called a <i>“Phisher”</i>
     </p>

@@ -25,7 +25,7 @@ session_start();
     <h3>The two practice trials are for training purposes only and will not affect your final performance in this study</h3>
     <h4>Please click the below button to start your practice trial.</h4></div>
 <div id="wrapperC">
-    <form method="get" action="Simulation.php" onsubmit="return onsubmitform();">
+    <form method="get" action="Templete.php" onsubmit="return onsubmitform();">
         <input type="submit" name="submit" id="submit" class="btn-style" value="Proceed"/>
         <input type="hidden" name="timeval" id="timeval" value=0 />
     </form>

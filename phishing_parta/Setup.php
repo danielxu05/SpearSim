@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -18,81 +19,23 @@
 </script>
 <body>
 <?php
-session_start();
+print_r($_GET);
+#print_r($_SESSION);
+include('../class/class.attacker.php');
+$attacker = unserialize (serialize ($_SESSION['User']));
+$attacker->setAge($_GET['age']);
+$attacker->setGender($_GET['Gender']);
+$attacker->setLangProf($_GET['Prof']);
+$attacker->setNatLang($_GET['Native']);
+$_SESSION['User'] = $attacker;
+#$attacker->
+#$db = Database::getInstance();
+#$conn = $db->getConnection(); 
 
-$_SESSION["Trial"]=0;
-$_SESSION["PrevTrial"]=0;
-
-$_SESSION["EmailID"]=1;
-$_SESSION["LotteryPaid"] = 0;
-print_r($_SESSION);
-$emailnumbers = range(2, 11);
-shuffle($emailnumbers);
-
-$email1 = $emailnumbers[0];
-$email2 = $emailnumbers[1];
-$email3 = $emailnumbers[2];
-
-
-$line = "";
-$file = fopen("Config.txt","r");
-$temp = 0;
-while(! feof($file))
-{
-    if($temp==0){
-        $line = fgets($file);
-
-    }
-    $line = $line."+".fgets($file);
-    $temp = $temp + 1;
-}
-fclose($file);
-//echo $line;
-
-$pieces = explode("+",$line);
-$servername = "localhost";
-$username = trim( $pieces[0]);
-$password = trim($pieces[1]);
-$dbname = trim($pieces[2]);
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-$sql = "SELECT Email,Subject FROM Email Where id='".$_SESSION["EmailID"]."'";
-$result = $conn->query($sql);
-$EmailText = "";
-$SubjectText = "";
-if ($result->num_rows > 0) {
-    #echo "We have Results";
-    while($row = $result->fetch_assoc()) {
-        $EmailText = $row["Email"];
-        $SubjectText = $row["Subject"];
-    }
-} else {
-    echo "Something is wrong. No results";
-}
-
-$sql = "INSERT INTO Participant (UserID, Email1, Email2, Email3, FinalEarnings) VALUES('".$_SESSION["workerId"]."',".$email1.",".$email2.",".$email3.", 2000)";
-if ($conn->query($sql) === TRUE) {
-    #echo "New record created successfully";
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
-}
-
-$sql = "INSERT INTO Phishing (UserID, Trial, Cost, Gain, Edit, Manipulation, EmailID, Capital,Subject, Email2, SubjectEdit, BodyEdit) VALUES('".$_SESSION["UserID"]."',0,0,0,0,1,1,2000,'".$SubjectText."','".$EmailText."',0,0)";
-if ($conn->query($sql) === TRUE) {
-    #echo "New record created successfully";
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
-}
-$conn->close();
-//intro pass session to setup 
 ?>
 <h3>Task Description:</h3>
 
-<form method="get" action="profile.php" onsubmit="return onsubmitform();">
+<form action="profile.php" onsubmit="return onsubmitform();">
 
     <p>You will perform 8 trials of "writing phishing emails". A sample will be provided to you at the beginning. Use the initial sample phishing email to edit and write your own phishing emails. During each trial in the experiment you will: (1) write a phishing email attack (2) launch the attack to make money and (3) get feedback on your success.
     </p>

@@ -16,43 +16,29 @@
 <?php
 session_start();
 
+
+include('class.database.php');
 $ID = $_SESSION["MTurkID"];
-$line = "";
-$file = fopen("Config.txt","r");
-$temp = 0;
-while(! feof($file))
-{
-    if($temp==0){
-        $line = fgets($file);
-
-    }
-    $line = $line."+".fgets($file);
-    $temp = $temp + 1;
-}
-fclose($file);
-
-$pieces = explode("+",$line);
-$servername = "localhost";
-$username = trim( $pieces[0]);
-$password = trim($pieces[1]);
-$dbname = trim($pieces[2]);
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+print_r($ID);
+$db = Database::getInstance();
+$conn = $db->getConnection(); 
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
     echo "Connection Error";
 }
+
 $ID = $conn->real_escape_string($ID);
 //get the email list from the row
 $sql = "SELECT EmailList from Rater WHERE UserID='$ID' ORDER BY ID;";
+echo $sql;
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 
 //split the string and get the list of IDS
 $EmailIDs = explode(",", $row['EmailList']);
 sort($EmailIDs);
-$i = 0;
+#yui$i = 0;
 //$length = count($EmailIDs);
 //echo "StartTime:".$_GET["starttime"];
 $prevtime = $_POST["starttime"];
@@ -181,11 +167,13 @@ foreach ($EmailIDs as $emailID) {
         $sql2 = "INSERT INTO UserClassification (SampleID, PhishID, RaterID, Response, Confidence, important, workmail, social, authority, status, marketing, personal, spam, job, deadline, positive, negative, request, offer, grammar, clear, other, decisiontime) VALUES (".$output.", ".$emailID.", '".$ID."', ".$output1.", ".$output2.", ".$ValueString.", ".$time.");";
     }
     //insert $output, $emailID, $ID, $output1, $output2, $output3
+
     $i++;
 }
-
+echo $sql2;
+echo "<Br>";
 //update the row as completed
-$sql2 .= "UPDATE Rater SET Completed=1 WHERE UserID='$ID'; ";
+$sql2 = "UPDATE Rater SET Completed=1 WHERE UserID='$ID'; ";
 //$result2 = $conn->multi_query($sql2);
 /*if ($conn->multi_query($sql2) === TRUE) {
     echo "<h2>Thank You! Your decisions have been recorded. You may close the window now.</h2>";

@@ -1,154 +1,36 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title></title>
-    <link rel="stylesheet" type="text/css" href="Style.css">
-    <meta charset="UTF-8">
-    <meta name="description" content="Attacker Experiment">
-    <meta name="author" content="Rajivan">
-</head>
 
-<?php
-
-session_start();
-
-//save userID and trial number in session
-$ID = $_SESSION["UserID"];
-$Prev_Trial = $_SESSION["Trial"];
-$_SESSION["PrevTrial"] = $Prev_Trial;
-
-$Cost = 100;
-$Current_Trial = $Prev_Trial + 1;
-$_SESSION["Trial"] = $Current_Trial;
-
-//Setup the DB Connection Info
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "Phishing";
-$Current_Capital = 0;
 $EmailText = "";
 $SubjectText = "";
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-#echo "Connected successfully";
+print_r($_POST);
 
-if($_SESSION["EmailID"] < 2){//Practice Trial
-    if($Current_Trial==3) { //After 2 trials switch to another trial
-        //reset trials and capital for the actual emails
-        $Prev_Trial = 0;
-        $Current_Trial = 1;
-        $_SESSION["PrevTrial"] = $Prev_Trial;
-        $_SESSION["Trial"] = $Current_Trial;
-        $Current_Capital = 2000;
-        //get another email ID from the dataset for the participant
-        $sql = "SELECT Email1 FROM Participant Where UserId=".$ID;
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0) {
-            #echo "We have Results";
-            while($row = $result->fetch_assoc()) {
-                $_SESSION["EmailID"] = $row["Email1"];
-            }
-        } else {
-            echo "Something is wrong. No results";
-        }
-
-        //Use the email ID and display the new email in the box
-        //Use the email ID and display the new email
-        $sql = "SELECT Email,Subject FROM Email Where id=".$_SESSION["EmailID"];
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0) {
-            #echo "We have Results";
-            while($row = $result->fetch_assoc()) {
-                $EmailText = $row["Email"];
-                $SubjectText = $row["Subject"];
-            }
-        } else {
-            echo "Something is wrong. No results";
-        }
-        $sql = "INSERT INTO Phishing (UserID, Trial, Cost, Gain, Edit, Manipulation, EmailID, Capital,Subject, Email2) VALUES(".$_SESSION["UserID"].",0,0,0,0,1,".$_SESSION["EmailID"].",2000,'".$SubjectText."','".$EmailText."')";
-        $result = $conn->query($sql);
+if($_SESSION["Trial"] < 2){//Practice Trial
+    $Practice = 1;
+    $_SESSION["Practice"]=1;
+    if($Current_Trial!=1){ //After 2 trials switch to another trial
+       
     }
     else{
-        $sql = "SELECT Capital, Subject, Email2 FROM Phishing Where UserID=".$ID." AND Trial=".$Prev_Trial;
+        $sql = "SELECT Capital, Subject, Email2 FROM Spear_Phishing Where UserID='".$ID."' AND Trial=".$Prev_Trial;
         $result = $conn->query($sql);
-        $Current_Capital = 0;
         if ($result->num_rows > 0) {
-            #echo "We have Results";
             while($row = $result->fetch_assoc()) {
                 $Current_Capital = $row["Capital"];
                 $EmailText = $row["Email2"];
                 $SubjectText = $row["Subject"];
             }
         } else {
-            echo "Something is wrong. No results";
+            echo "Something is wrong. No results3";
         }
     }
 }
 else{
-    if(($Prev_Trial%10) == 0) {
-        if($Prev_Trial == 10) {
-            $sql = "SELECT Email2 FROM Participant Where UserId=".$ID;
-            $result = $conn->query($sql);
-            if ($result->num_rows > 0) {
-                #echo "We have Results";
-                while($row = $result->fetch_assoc()) {
-                    $_SESSION["EmailID"] = $row["Email2"];
-                }
-            } else {
-                echo "Something is wrong. No results";
-            }
-        }
-        if($Prev_Trial == 20) {
-            $sql = "SELECT Email3 FROM Participant Where UserId=".$ID;
-            $result = $conn->query($sql);
-            if ($result->num_rows > 0) {
-                #echo "We have Results";
-                while($row = $result->fetch_assoc()) {
-                    $_SESSION["EmailID"] = $row["Email3"];
-                }
-            } else {
-                echo "Something is wrong. No results";
-            }
-        }
-        if($Prev_Trial == 30){
+    if($Prev_Trial == 8){
             header('Location: ThankYou.php' );
-        }
-        //Use the email ID and display the new email
-        $sql = "SELECT Email,Subject FROM Email Where id=".$_SESSION["EmailID"];
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0) {
-            #echo "We have Results";
-            while($row = $result->fetch_assoc()) {
-                $EmailText = $row["Email"];
-                $SubjectText = $row["Subject"];
-            }
-        } else {
-            echo "Something is wrong. No results";
-        }
-        $sql = "SELECT Capital FROM Phishing Where UserID=".$ID." AND Trial=".$Prev_Trial;
+    }else{
+        $sql = "SELECT Capital, Email2, Subject FROM Spear_Phishing Where UserID='".$ID."' AND Trial=".$Prev_Trial;
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
-            #echo "We have Results";
-            while($row = $result->fetch_assoc()) {
-                $Current_Capital = $row["Capital"];
-            }
-        } else {
-            echo "Something is wrong. No results";
-        }
-
-    }
-    else{
-        $sql = "SELECT Capital, Email2, Subject FROM Phishing Where UserID=".$ID." AND Trial=".$Prev_Trial;
-        $result = $conn->query($sql);
-
-        if ($result->num_rows > 0) {
-            #echo "We have Results";
             while($row = $result->fetch_assoc()) {
                 $Current_Capital = $row["Capital"];
                 $EmailText = $row["Email2"];
@@ -159,46 +41,3 @@ else{
         }
     }
 }
-
-
-
-$conn->close();
-
-$val = ($Current_Capital/4000) * 100;
-$global_percent = $val;
-
-?>
-
-<body>
-<div name="wrapper" id="wrapperC">
-<h1>Phishing Attacker Console</h1></div>
-<div name="wrapper" id="wrapper">
-<label id="MoneyYouHave" style="font-size: large">Points You Have:</label>
-    <div id="bar_blank">
-    <div id="bar_color"style="width:<?php echo $global_percent; ?>%">
-        <label id="Capitalval" style="color: white" ><?php echo $Current_Capital; ?></label>
-    </div>
-    </div>
-
-    <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script> <script type="text/javascript">
-        //<![CDATA[
-        bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
-        //]]>
-    </script>
-
-<form method="get" action="Scoring.php">
-
-        <input type="hidden" name="Capital" id="Capital" value="<?php echo $Current_Capital; ?>"/>
-    <br><br>
-    <label name="Subjectline" id="Subjectline" style="font-size:medium;font-weight: bold">Subject:</label> <input type="text" name="Subject" id="Subject" cols="50" style="border-style: solid; border-width: medium" value="<?php echo $SubjectText; ?>" ><br><br>
-    <textarea name="email1" id="email1" rows="25" cols="150"><?php echo $EmailText; ?></textarea><br>
-</div>
-    <div id="wrapperC">
-<input type="submit" class="btn-style" name="submit" value="Launch"/>
-    </div>
-</form>
-
-
-
-</body>
-</html>

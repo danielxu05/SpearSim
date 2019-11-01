@@ -69,7 +69,6 @@ while(! feof($file))
 {
     if($temp==0){
         $line = fgets($file);
-
     }
     $line = $line."+".fgets($file);
     $temp = $temp + 1;

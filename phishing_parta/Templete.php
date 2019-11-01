@@ -16,8 +16,8 @@
 /* Tooltip text */
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 120px;
-  background-color: black;
+  width: 400px;
+  background-color: grey;
   color: #fff;
   text-align: center;
   padding: 5px 0;
@@ -37,22 +37,23 @@
 <body>
 <h2>Templete Selection</h2>
 <h4>Choose a Templete you are willing to use to generate the email</h4>
-
 <?php
-$templearray = array('Templete1' => "amazing story",
-					'Templete2' => "terrifying",
-					'Templete3' => "what a nic story",
-					'Templete4' => "cool",
-					'Templete5' => "s",
-					'Templete6' => "hahah"
-);
-foreach($templearray as $t => $value){
+include('../class/class.database.php');
+$db = Database::getInstance();
+$conn = $db->getConnection(); 
+$sql = "SELECT * FROM Email";
+$result = $conn->query($sql);
+echo '<form action = "Simulation.php" method = "POST">';
+while($row = $result->fetch_assoc()) {
 	echo '<div class="tooltip">';
-	echo '<a href="Simulation.php">'.$t.'</a>';
-	echo '<span class="tooltiptext">'.$templearray[$t].'</span>';
+  echo '<input type="text" value = "'.$row['Subject'].'">';
+  echo '<input type = "submit" name = TempleteID value = '.$row['id'].'>';
+	echo '<span class="tooltiptext">'.$row['Email'].'</span>';
 	echo "</div>";
 	echo "<br>";
 }
+echo "</form>";
+
 ?>
 
 </body>

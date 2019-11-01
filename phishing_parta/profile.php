@@ -1,3 +1,4 @@
+<?php session_start();?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
 <head>
@@ -11,29 +12,27 @@
 <title>Profile</title>
 <body>
 <h2>Target Profile</h2>
-<h4>LinkedIn/Facebook/Twitter information</h4>
 <?php
-session_start();
 #print_r($_SESSION);
-include('class.database.php');
-$db = Database::getInstance();
-$mysqli = $db->getConnection(); 
-$sql = "SELECT `profile_type` FROM `AttackerType` WHERE `UserID`='".$_SESSION["workerId"]."'";
-$result = $mysqli->query($sql);
-$type = $result->fetch_assoc()['profile_type'];
+include('../class/class.attacker.php');
+#need unserialize and serialize the object variable from session. 
+
+$attacker = unserialize (serialize ($_SESSION['User']));
+$type = $attacker->getProfileType();
 if ($type == 'Facebook'){
-	echo '<img src="Facebook.png">';
-}elseif ($type=='LinkedIn') {
+   echo "<h4>Facebook</h4>";
+    echo '<img src="Facebook.png">';
+}elseif ($type=='Linkedin') {
+    echo "<h4>LinkedIn</h4>";
 	echo '<img src="LinkedIn1.png">';
 	echo '<img src="LinkedIn2.png">';
 	echo '<img src="LinkedIn3.png">';
 }elseif ($type == 'Twitter') {
+    echo "<h4>Twitter</h4>";
 	echo '<img src="Twitter.png">';
 }
-
 ?>
 </body>
-
 <form method="get" action="ExperimentBlock.php">
 <input type="submit" name="submit" class="btn-style" value="Practice"/>
 </html>

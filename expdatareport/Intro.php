@@ -19,23 +19,19 @@
 </script>
 <body>
 <?php
-session_start();
-$_SESSION["MTurkID"]=$_GET["MTId"];
+include '../class/class.rater.php';
 
-include('class.database.php');
-$db = Database::getInstance();
-$conn = $db->getConnection(); 
+#var_dump($_GET);
+$rater = new Rater($_GET['MTId']);
+$result = $rater->checkAttackersql();
+#if ($result->num_rows > 0) {
+#    echo "yes";
+#    header('Location: Error.html');
+#}else{
+#    echo "no";
+$_SESSION['Rater']=$rater;
+#}
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-$sql = "SELECT UserID FROM Rater Where UserId='".$_SESSION["MTurkID"]."';";
-$result1 = $conn->query($sql);
-if ($result1->num_rows > 0) {
-    header('Location: Error.html');
-}
-$conn->close();
 ?>
 <div id="wrapperC">
 <h2>Email Management</h2></div>

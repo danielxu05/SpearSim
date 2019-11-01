@@ -1,6 +1,17 @@
 <?php
 session_start();
+#include '../class/class.user.php';
+include "../class/class.attacker.php";
+$MTId= $_GET["MTId"];
+$attacker = new Attacker($MTId);
+#if ($attacker->checkAttackersql()->num_rows > 0) {
+#    header('Location: Error.html');
+#}else{
+echo "wow";
+$_SESSION['User'] = $attacker;
+
 ?>
+
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -60,89 +71,9 @@ session_start();
         $(window).unbind('beforeunload');
     }
 </script>
-
-<?php
-$MTId= $_GET["MTId"];
-$_SESSION["workerId"] = $MTId;
-echo $_SESSION['workerId'];
-print_r($_SESSION);
-
-$_SESSION["Manipulation"]=0;
-
-$rand = mt_rand(1,10000)/10000;
-$result = "Intro.php";
-$rand = 0.8; //making creativity test for everyone
-//Based on the random number, choose the next step
-if($rand<0.51) {
-    $result = "CreativityTest.php";
-    $_SESSION["Manipulation"]=1;
-}
-else {
-    $result = "Intro.php";
-    $_SESSION["Manipulation"]=0;
-}
-
-$line = "";
-$file = fopen("Config.txt","r");
-$temp = 0;
-while(! feof($file))
-{
-    if($temp==0){
-        $line = fgets($file);
-
-    }
-    $line = $line."+".fgets($file);
-    $temp = $temp + 1;
-}
-fclose($file);
-#echo $line;
-
-$pieces = explode("+",$line);
-$servername = "localhost";
-$username = trim( $pieces[0]);
-$password = trim($pieces[1]);
-$dbname = trim($pieces[2]);
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-$type = array('Facebook','Twitter','LinkedIn');
-$sql = "SELECT profile_type,COUNT(profile_type)AS Frequency 
-        FROM AttackerType 
-        GROUP BY profile_type
-        ORDER BY 
-        COUNT(profile_type)";
-$result2 = $conn->query($sql);
-if ($result2->num_rows<=2){
-    $attack_type = $type[mt_rand(0,2)];
-    echo(1);
-}else {
-    $attack_type = $result2->fetch_assoc()['profile_type'];
-}
-var_dump($result2);
-##When a new attack start, it will generate the profile type based on the exsisting number of profile type to 
-##keep the uniform distribution for prfile type
-$sql = "INSERT INTO AttackerType (UserID, profile_type) VALUES ('".$_SESSION['workerId']."', '".$attack_type."');";
-echo $sql;
-if ($conn->query($sql) === TRUE) {
-     "New record created successfully";
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
-}
-
-
-$sql = "SELECT UserID FROM Participant Where UserId='".$_SESSION["workerId"]."'";
-$result1 = $conn->query($sql);
-if ($result1->num_rows > 0) {
-    header('Location: Error.html');
-}
-$conn->close();
-?>
 <label id="catnum12" style="font-size:x-large; color:black; font-style:italic;" ></label>
 <div id="start">
-<form name="myForm" method="get" onsubmit="return validate();" action=<?php echo $result;?>>
+<form name="myForm" method="get" onsubmit="return validate();" action="Setup.php">
     <h3>What is your age?</h3>
     <label style="font-size: medium;"><input type="radio" name="age" value="lt18"/> Less than 18<br/></label>
     <label style="font-size: medium;"><input type="radio" name="age" value="18-25"/> 18-25<br/></label>
@@ -184,3 +115,4 @@ $conn->close();
 </div>
 </body>
 </html>
+

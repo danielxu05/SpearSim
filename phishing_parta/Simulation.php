@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
 <head>
@@ -9,29 +10,58 @@
     <meta name="description" content="Attacker Experiment">
     <meta name="author" content="Rajivan">
 </head>
+
+<?php 
+ini_set("memory_limit","512M");
+$StartTime = time();
+include '../class/class.email.php';
+$attacker = unserialize (serialize ($_SESSION['User']));
+if($attacker->getTrial()==0) {
+    #echo '<script type="text/javascript"> alert("Reminder:You have exceeded 45 minutes in the experiment"); </script>';
+}
+//Setup the DB Connection Info
+$db = Database::getInstance();
+$conn = $db->getConnection(); 
+$attacker->nextTrial();
+$Practice_I = 0;
+#$Attacker,$Templete,$Practice_I,$Status,$AttackStartTS
+echo "<br><br>";
+$Email = new Email($attacker,$_POST['TempleteID'],$Practice_I,0,$StartTime);
+#var_dump($Email);
+#if($attacker->getTrial()>1){
+#}elseif($attacker->getTrial()>1 and $attacker->getTrial()<2 ){
+    #practice Trial 
+#}else
+$EmailText = "preset";
+$SubjectText ="preset";
+
+
+$sql = "SELECT `Email`, `Subject` FROM `Email` WHERE id = ".$_POST['TempleteID'];
+$result = $conn->query($sql)->fetch_assoc();
+$EmailText = $result['Email'];
+$SubjectText = $result['Subject'];
+
+$Current_Capital = 2000;
+$val = ($Current_Capital/4000) * 100;
+$global_percent = $val;
+$_SESSION['User']=$attacker;
+?>
 <script>
     var editor;
     // The instanceReady event is fired when an instance of CKEditor has finished
     // its initialization.
     CKEDITOR.on( 'instanceReady', function ( ev ) {
         editor = ev.editor;
-
         // Show this "on" button.
-        document.getElementById( 'readOnlyOn' ).style.display = '';
-
+        //document.getElementById( 'readOnlyOn' ).style.display = '';
         // Event fired when the readOnly property changes.
-        editor.on( 'readOnly', function () {
-            document.getElementById( 'readOnlyOn' ).style.display = this.readOnly ? 'none' : '';
-            document.getElementById( 'readOnlyOff' ).style.display = this.readOnly ? '' : 'none';
-        } );
     } );
 
     function toggleReadOnly( isReadOnly ) {
 
         editor.setReadOnly( isReadOnly );
     }
-</script>
-<script type="text/javascript">
+
     $(document).ready(function(){
         $(window).bind("beforeunload", function(){ return(false); });
     });
@@ -43,173 +73,32 @@
             return false;
         }else {
             // grab the value of the hidden donecheck element
+            <?php ?>
             $(window).unbind('beforeunload');
         }
     }
-
     function Q1_click(){
         $("#Button1").hide();
+        <?php $Email->setAttackFinishTS(time());$_SESSION['Email'] = $Email;?>
         var parent = $("#questions");
         var divs = parent.find("label");
+        console.log('pass');
         while (divs.length) {
             parent.append(divs.splice(Math.floor(Math.random() * divs.length), 1)[0]);
         }
-
         $("#strategyq").show();
         $("#launchB").show();
         toggleReadOnly();
     }
-    function Q2_click(){
-        if($('input[type=checkbox]:checked').length == 0)
-        {
-            alert( "Please choose all applicable strategies to proceed" );
-            return false;
-        }
-        //else{
-           // $("#Button2").hide();
-            //$("#strategyq").hide();
-            //$("#launchB").show();
-        //}
-    }
 </script>
-<?php ini_set("memory_limit","512M"); ?>
-
-<?php
-session_start();
-$curtime = time();
-$timediff = $curtime - $_SESSION["starttimeval"];
-
-/*if($timediff > 1200){
-    if($_SESSION["Check1"]==0) {
-        $_SESSION["Check1"]=1;
-        echo '<script type="text/javascript"> alert("Reminder:You have exceeded 20 minutes in the experiment"); </script>';
-    }
-}*/
-/*if($timediff > 2100){
-    if($_SESSION["Check2"]==0) {
-        $_SESSION["Check2"]=1;
-        echo '<script type="text/javascript"> alert("Reminder:You have exceeded 35 minutes in the experiment"); </script>';
-    }
-}*/
-if($timediff > 2700){
-    if($_SESSION["Check2"]==0) {
-        $_SESSION["Check2"]=1;
-        echo '<script type="text/javascript"> alert("Reminder:You have exceeded 45 minutes in the experiment"); </script>';
-    }
-}
-print_r($_SESSION);
-//save userID and trial number in session
-$ID = $_SESSION["UserID"];
-$Prev_Trial = $_SESSION["Trial"];
-$Current_Trial = $Prev_Trial + 1;
-
-$_SESSION["PrevTrial"] = $Prev_Trial;
-$_SESSION["Trial"] = $Current_Trial;
-$Practice = 0;
-$_SESSION["Practice"]=0;
-
-//Setup the DB Connection Info
-include('class.database.php');
-$db = Database::getInstance();
-$conn = $db->getConnection(); 
-
-$Current_Capital = 0;
-$EmailText = "";
-$SubjectText = "";
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-if($_SESSION["EmailID"] < 2){//Practice Trial
-    $Practice = 1;
-    $_SESSION["Practice"]=1;
-    if($Current_Trial==3){ //After 2 trials switch to another trial
-        //reset trials and capital for the actual emails
-        $Prev_Trial = 0;
-        $Current_Trial = 1;
-        $_SESSION["PrevTrial"] = $Prev_Trial;
-        $_SESSION["Trial"] = $Current_Trial;
-        $Current_Capital = 2000;
-        //get another email ID from the dataset for the participant
-        $sql = "SELECT Email1 FROM Participant Where UserId='".$ID."'";
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                $_SESSION["EmailID"] = $row["Email1"];
-            }
-        } else {
-            echo "Something is wrong. No results";
-        }
-
-        //Use the email ID and display the new email in the box
-        //Use the email ID and display the new email
-        $sql = "SELECT Email,Subject FROM Email Where id=".$_SESSION["EmailID"];
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                $EmailText = $row["Email"];
-                $SubjectText = $row["Subject"];
-            }
-        } else {
-            echo "Something is wrong. No results";
-        }
-        $sql = "INSERT INTO Phishing (UserID, Trial, Cost, Gain, Edit, Manipulation, EmailID, Capital, Subject, Email2, SubjectEdit, BodyEdit) VALUES('".$_SESSION["UserID"]."',0,0,0,0,1,".$_SESSION["EmailID"].",2000,'".$SubjectText."','".$EmailText."',0,0)";
-        if ($conn->query($sql) === TRUE) {
-            #"New record created successfully";
-        } else {
-            echo "Error wihole inserting";
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
-        $Practice = 0;
-        $_SESSION["Practice"]=0;
-    }
-    else{
-        $sql = "SELECT Capital, Subject, Email2 FROM Phishing Where UserID='".$ID."' AND Trial=".$Prev_Trial;
-        $result = $conn->query($sql);
-        $Current_Capital = 0;
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                $Current_Capital = $row["Capital"];
-                $EmailText = $row["Email2"];
-                $SubjectText = $row["Subject"];
-            }
-        } else {
-            echo "Something is wrong. No results";
-        }
-    }
-}
-else{
-    if($Prev_Trial == 8){
-            header('Location: ThankYou.php' );
-    }else{
-        $sql = "SELECT Capital, Email2, Subject FROM Phishing Where UserID='".$ID."' AND Trial=".$Prev_Trial;
-        $result = $conn->query($sql);
-
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                $Current_Capital = $row["Capital"];
-                $EmailText = $row["Email2"];
-                $SubjectText = $row["Subject"];
-            }
-        } else {
-            echo "Something is wrong. No results";
-        }
-    }
-}
-$conn->close();
-
-$val = ($Current_Capital/4000) * 100;
-$global_percent = $val;
-?>
 <body>
 <form method="post" name="myForm1" id="myForm1" action="Scoring.php" onsubmit="return onsubmitform();">
-
+    <input type="hidden" id="starttime" name="starttime" value="">
+        <input type="hidden" name="endtime" value="">
     <!--Title and score part of the page -->
     <div name="wrapper" id="wrapperC">
         <h1>Phishing Attacker Console</h1>
-        <label id="Instruction0" style="color: Red;font-size:LARGE;font-weight: bold; font-style: italic " ><?php if($Practice==1) {echo "(This is a practice trial)";} ?></label>
+        <label id="Instruction0" style="color: Red;font-size:LARGE;font-weight: bold; font-style: italic " ><?php if($_SESSION['Trial']==1) {echo "(This is a practice trial)";} ?></label>
     </div>
 
     <!--Email part of the page -->
@@ -226,7 +115,8 @@ $global_percent = $val;
         <input type="hidden" name="Capital" id="Capital" value="<?php echo $Current_Capital; ?>"/>
         <br /><br />
         <label name="Subjectline" id="Subjectline" style="font-size:medium;font-weight: bold">Subject:</label> <input type="text" name="Subject" id="Subject" style="width: 500px; border-style: solid; border-width: medium" value="<?php echo $SubjectText; ?>" > <label id="Instruction" style="color: Red;font-size:Medium;font-weight: bold; font-style: italic " ><?php if($Practice==1) {echo "<---- Edit the subject line of the email here";} ?></label><br>
-        <textarea name="email1" id="email1" rows="50" cols="150" class="ckeditor"> <?php echo $EmailText; ?> </textarea> <label id="Instruction" style="color: Red;font-size:large;font-weight: bold; font-style: italic " ><?php if($Practice==1) {echo "Edit the main body of the email here. You can use the formatting options available at the top of the box.";} ?></label>
+        <textarea name="email1" id="email1" rows="50" cols="150" class="ckeditor"> <?php echo $EmailText
+         #presetting email content?> </textarea> <label id="Instruction" style="color: Red;font-size:large;font-weight: bold; font-style: italic " ><?php if($Practice==1) {echo "Edit the main body of the email here. You can use the formatting options available at the top of the box.";} ?></label>
         <!-- <script type="text/javascript">
             CKEDITOR.replace( 'email1' );
         </script> -->
