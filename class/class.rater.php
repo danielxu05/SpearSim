@@ -9,11 +9,13 @@ class Rater extends User
   	private $Spear_eval_num = 0;
   	private $Non_Spear_eval_num = 0;
   	private $TargetAttackerID;
+    private $EmailList;
 
   	function __construct($ID)
   	{
-  		parent::__construct($ID,'Rater');
- 		$this->setTargetAttackerID();
+  	   parent::__construct($ID,'Rater');
+ 		   $this->setTargetAttackerID();
+       $this->setEmailList();
   		# code...
   	}
 
@@ -35,23 +37,35 @@ class Rater extends User
 
   	public function setTargetAttackerID(){
   		$db = Database::getInstance();
-		$conn = $db->getConnection(); 
-		echo "ssssss";
-
+		  $conn = $db->getConnection(); 
   		$sql = "SELECT AttackerID FROM Rater Where UserID = '".$this->getUserID()."'";
-  		echo $sql;
   		$result = $conn->query($sql);
-        if ($result->num_rows>0){
-        	$this->TargetAttackerID = $result->fetch_assoc()['AttackerID'];
-        	echo "set";
-        }else{
-        	echo "No target attacker to evaluate;";
-        }
+      if ($result->num_rows>0){
+      	$this->TargetAttackerID = $result->fetch_assoc()['AttackerID'];
+      }else{
+      	echo "No target attacker to evaluate;";
+      }
   	}
 
   	public function getTargetAttackerID(){
   		return $this->TargetAttackerID;
   	}
+
+    public function setEmailList(){
+      $db = Database::getInstance();
+      $conn = $db->getConnection(); 
+      $sql = "SELECT EmailList from Rater WHERE UserID='".$this->getUserID()."'";
+      #echo $sql;
+      $result = $conn->query($sql);
+      $row = $result->fetch_assoc();
+      $EmailIDs = explode(",", $row['EmailList']);
+      #var_dump($EmailIDs);
+      $this->EmailList = $EmailIDs;
+    }
+
+    public function getEmailList(){
+      return $this->EmailList;
+    }
 
   	public function checkAttackersql(){
 	    #check the attacker; 

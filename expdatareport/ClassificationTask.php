@@ -23,11 +23,6 @@ div.a {
             document.myForm.endtime.value = d.getTime();
         }
     </script>
-
-    <form name="myForm" method="post" action="insert.php" onsubmit="return onsubmitform();">
-        <h1>Email Classification Console</h1>
-        <input type="hidden" id="starttime" name="starttime" value="">
-        <input type="hidden" name="endtime" value="">
         
 <?php
 include('../class/class.rater.php');
@@ -42,14 +37,10 @@ var_dump($rater->getTargetAttackerID());
 $sql3 = "SELECT * FROM Spear_Phishing 
         WHERE `UserID` = '".$rater->getTargetAttackerID()."' and Status =0
         ORDER BY AttackFinishTS";
-
-
 echo $sql3;
 echo "<Br>";
 $result3 = $conn->query($sql3);
 echo "<Br>";
-$row = array(); 
-
 if ($result3->num_rows > 0) {
     // output data of each row
     $row = $result3->fetch_assoc();
@@ -57,28 +48,23 @@ if ($result3->num_rows > 0) {
     $_SESSION['Spear'] = 1;
 } elseif ($result3->num_rows==0){
     //get the email list from the row
-    $sql1 = "SELECT EmailList from Rater WHERE UserID='$ID'";
-    $result1 = $conn->query($sql1);
-    $row1 = $result1->fetch_assoc();
-    
-    $EmailIDs = explode(",", $row1['EmailList']);
-    sort($EmailIDs);
-    $length = count($EmailIDs);
+    $EmailIDs = $rater->getEmailList();
 
-    $sql2 = "SELECT * from HamEmail WHERE id IN (".implode(',',$EmailIDs).") and id NOT in 
-    (SELECT PhishID FROM UserClassification WHERE RaterID = '$ID' and spear_phishing_indicator = 0);";
-    #echo "$sql2";
+    var_dump($EmailIDs);
+    $sql2 = "SELECT * from EmailPool WHERE id IN (".implode(',',$EmailIDs).") AND id NOT in 
+    (SELECT PhishID FROM UserClassification WHERE RaterID = '".$rater->getUserID()."' and spear_phishing_indicator = 0);";
+    echo $sql2;
     #ORDER BY RAND();
+    var_dump(implode(',',$EmailIDs));
     echo "<Br>";
     $result2 = $conn->query($sql2);
     if($result2->num_rows>0) {
         $row = $result2->fetch_assoc();
-        $row['EmailCont']= $row['Email'];
         $_SESSION['Spear']=0;
         echo $row['id'];
         echo "Non-Spear";
     }else {
-    $row['Email2']="No results were returned";
+        echo "No result is return";
     }
 }
 #var_dump($row);
@@ -95,7 +81,10 @@ echo "<br>";
 #Email Classification Label; 
 echo $emailID;
 ?>
-
+<form name="myForm" method="post" action="insert.php" onsubmit="return onsubmitform();">
+<h1>Email Classification Console</h1>
+<input type="hidden" id="starttime" name="starttime" value="">
+<input type="hidden" name="endtime" value="">
 <h3>How would you manage this e-mail?</h3>
 <label style= font-size: 16px;><input type="radio" id=1 name=label1 value=1 >Respond immediately</label> <br>
 <label style= font-size: 16px;><input type="radio" id=1 name=label1 value=2 >Leave the email in the inbox and flag for follow up</label> <br>
@@ -105,48 +94,41 @@ echo $emailID;
 
 <h3>Rate how confident you are with your recommendation</h3>
 <label style=font-size: 16px;>No Confidence</label>
- <input type=range name='label2' min='0' max='100' value='50' step='1' style=width: 600px;>&nbsp <label style=font-size: 16px;>High Confidence</label>;
-<br><span style='margin-left: 270px'>Moderate Confidence</span>
+ <input type=range name='label2' min='0' max='100' value='50' step='1' style=width: 600px;>&nbsp <label style=font-size: 16px;>High Confidence</label><br>
+<br><span style='margin-left: 270px'>Moderate Confidence</span><br>
 <label style=font-size: 16px;><input type=radio id=2 name=label2 value=1 >No Confidence</label> <br>
 <label style=font-size: 16px;><input type=radio id=2 name=label2 value=2 >Slight Confidence</label> <br>
 <label style=font-size: 16px;><input type=radio id=2 name=label2 value=3 >Moderate Confidence</label> <br>
 <label style=font-size: 16px;><input type=radio id=2 name=label2 value=4 >High Confidence</label> <br>
 
-<h3>Select all applicable aspects of this email that influenced your decision</h3>;
-<label style=font-size: 16px;><input type=checkbox id='label3' name='label3[]' value=important >Reads like an important message</label><br>";
- <?php  
-$label3 = "label3";
-echo "<h3>Select all applicable aspects of this email that influenced your decision</h3>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"important\" >Reads like an important message</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"work\" >Reads like a work-related message</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"social\" >Reads like a message from an acquaintance</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"authority\" >Reads like a legal/government message</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"status\" >Reads like a status update or reminder</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"marketing\" >Reads like a marketing e-mail</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"personal\" >Reads like a message about personal account</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"spam\" >Reads like a spam message</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"job\" >Reads like a job opportunity</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"deadline\" >Message contains a deadline</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"positive\" >Message contains positive emotion (e.g., curiosity, surprise, excitement)</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"negative\" >Message contains negative emotion (e.g., fear, panic, threat)</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"request\" >Message contains request for help</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"offer\" >Message offers assistance</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"grammar\" >Contains spelling and grammatical errors</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"clear\" >Clearly written e-mail</label><br>";
-echo "<label style=\"font-size: 16px;\"><input type=\"checkbox\" id='".$label3."' name='".$label3."[]' value=\"other\" >Other</label><br>";
+<h3>Select all applicable aspects of this email that influenced your decision</h3>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value="important" >Reads like an important message</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=work>Reads like a work-related message</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=social >Reads like a message from an acquaintance</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=authority>Reads like a legal/government message</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=status >Reads like a status update or reminder</label><br>
 
-echo "<textarea name='".$label3."' rows=\"9\" cols=\"100\">";
-echo "</textarea>";
-echo "<br>";
-echo "<br>";
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=marketing>Reads like a marketing e-mail</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=personal>Reads like a message about personal account</label><br>
 
-echo "<input type=\"hidden\" name='".$label4."' value=\"\">";
-echo "<input type=\"hidden\" name='".$label5."' value=\"\">";
-echo "<input type=\"hidden\" name='".$label6."' value=\"\">";
-?>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=spam >Reads like a spam message</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=job >Reads like a job opportunity</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=deadline >Message contains a deadline</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=positive >Message contains positive emotion (e.g., curiosity, surprise, excitement)</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=negative>Message contains negative emotion (e.g., fear, panic, threat)</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=request>Message contains request for help</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=offer >Message offers assistance</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=grammar >Contains spelling and grammatical errors</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=clear >Clearly written e-mail</label><br>
+<label style=font-size: 16px;><input type=checkbox id=3 name=label3 value=other >Other</label><br>
+<textarea name='label3' rows=9 cols=100></textarea>
+<br>
+<br>
 
+<input type=hidden name=label4 value=\\>
+<input type=hidden name=label5 value=\\>
+<input type=hidden name=label6 value=\\>
 <button onclick="myFunction()">Submit</button>
-
 <script>
 function myFunction() {
     document.getElementById("field2").value = document.getElementById("field1").value;
