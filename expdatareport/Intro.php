@@ -29,6 +29,7 @@ $result = $rater->checkAttackersql();
 #    header('Location: Error.html');
 #}else{
 #    echo "no";
+#$rater->insertDB();
 $_SESSION['Rater']=$rater;
 #}
 

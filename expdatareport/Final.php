@@ -67,7 +67,6 @@ foreach ($EmailIDs as $emailID) {
     $label6 = "T2_".$emailID;
     $output1 = $_POST[$label1];
     $output2 = $_POST[$label2];
-    $output3 = $_POST[$label3];
     $output6 = $_POST[$label6];
     //echo "<br>";
     //echo $output6;
@@ -77,6 +76,8 @@ foreach ($EmailIDs as $emailID) {
     //$time=$output6-$prevtime;
     //$prevtime = $output6;
     $time=$output6;
+    
+    $output3 = $_POST[$label3];
 
     $ValueString = "";
     if(!empty($output3)) {

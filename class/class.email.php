@@ -44,7 +44,6 @@ class Email
   		$this->Templete = $Templete;
   		$this->Practice_I = $Practice_I;
   		$this->Status = $Status;
-  		$this->AttackStartTS = $AttackStartTS;
   	}
 
   	public function getAttacker(){
@@ -148,7 +147,7 @@ class Email
 	}
 
 	public function getAttackStartTS(){
-		return $this->ATTS;
+		return $this->AttackStartTS;
 	}
 
 	public function setAttackStartTS($AttackStartTS){

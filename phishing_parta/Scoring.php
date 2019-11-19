@@ -13,23 +13,40 @@ session_start();
 ini_set("memory_limit","512M");
 include('../class/class.email.php');
 
-echo "<br>";
-echo $_SESSION['test'];
-#var_dump($_SESSION['Email']);
-
+var_dump($_POST);
 //Setup the DB Connection Info
 $db = Database::getInstance();
 $conn = $db->getConnection(); 
 $email = unserialize(serialize($_SESSION['Email']));
 $attacker = unserialize (serialize ($_SESSION['User']));
-#var_dump($_POST);
 $email->setEmailCont($_POST['email1']);
 $email->setSubject($_POST['Subject']);
 
-#var_dump($email);
+$email->setAttackStartTS($_POST['starttime']);
+$email->setAttackFinishTS($_POST['endtime']);
+$email->setKeyStroke($_POST['keystroke']);
+
 echo "<br>";
 $email->insertDB();
 echo "<br>Done";
+
+
+function leven($s1,$s2){
+    $l1 = strlen($s1);                    // Länge des $s1 Strings
+    $l2 = strlen($s2);                    // Länge des $s2 Strings
+    $dis = range(0,$l2);                  // Erste Zeile mit (0,1,2,...,n) erzeugen
+    // $dis stellt die vorrangeganene Zeile da.
+    for($x=1;$x<=$l1;$x++){
+        $dis_new[0]=$x;               // Das erste element der darauffolgenden Zeile ist $x, $dis_new ist damit die aktuelle Zeile mit der gearbeitet wird
+        for($y=1;$y<=$l2;$y++){
+            $c = ($s1[$x-1] == $s2[$y-1])?0:1;
+            $dis_new[$y] = min($dis[$y]+1,$dis_new[$y-1]+1,$dis[$y-1]+$c);
+        }
+        $dis = $dis_new;
+    }
+    return $dis[$l2];
+}
+
 
 $Status =0;
 
@@ -102,19 +119,17 @@ $Button_String2 = "Done!";
 date_default_timezone_set("America/New_York");
 header("Content-Type: text/event-stream");
 $counter = rand(1, 10); // a random counter
-
 //}
 ?>
 
 <body>
 <div id="wrapperC" name="wrapperScore" >
-
     <form name="myform">
         <img src="waiting.gif">
         <h1>Your Result is being Evluating</h1>
         <label id="Instruction0" style="color: Red;font-size:LARGE;font-weight: bold; font-style: italic " ><?php if($attacker->getTrial()==1) {echo "(This is a practice trial)";} ?></label>
         <h4>Trial:<?php echo $attacker->getTrial(); ?></h4>
-        <h4>You Currently have:<?php echo $email->getCapital(); ?></h4>
+        <h4>You Currently have:<?php echo "a number to be added"; ?></h4>
         <label id="Instruction1" style="color: Red;font-size:Medium;font-weight: bold; font-style: italic " ><?php if($attacker->getTrial()==1) {echo "(The above value indicates how much total points you have remaining after this attack)";} ?></label>
         <h4>Cost of the last attack:<?php echo $email->getCost(); ?></h4>
         <label id="Instruction2" style="color: Red;font-size:Medium;font-weight: bold; font-style: italic " ><?php if($attacker->getTrial()==1) {echo "(The above value shows the cost of the attack)";} ?></label>
@@ -123,17 +138,18 @@ $counter = rand(1, 10); // a random counter
         <br><label id="Instruction4" style="color: Green;font-size:Medium;font-weight: bold; font-style: italic" ><?php if($attacker->getTrial()==1) {echo "Remember: In a Phishing attack, there are no certainties on rewards from each attack. Be persistent to score big";} ?></label>
         <br />  <br />
         <input type="hidden" name="BlockCheck" id="BlockCheck" value="<?php echo $Block_Check; ?>"/>
-        <input type="submit" name="submit" id ='mySubmit' class="btn-style" value="<?php if($Trial==$block1){ echo $Button_String2; } else {echo $Button_String1;} ?>"/>
        <br/> <label id="Instruction4" style="color: Red;font-size:Medium;font-weight: bold; font-style: italic " ><?php if($_SESSION["Practice"]==1) {echo "(Click here to try again)";} ?></label>
         <input type="hidden" name="timeval" id="timeval" value=0 />
     </form>
 
 </div>
 </body>
+
 <?php  
 while (1) {
 // 1 is always true, so repeat the while loop forever (aka event-loop)
     $sql3 = "SELECT * From Spear_Phishing Where UserID ='".$attacker->getUserID()."' and Trial = '".$attacker->getTrial()."'";
+    echo $sql3;
     $result3 = $conn->query($sql3);
     if ($result3->num_rows ==0){
         echo "Nothing return";

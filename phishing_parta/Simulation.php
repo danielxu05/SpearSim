@@ -17,7 +17,7 @@ $StartTime = time();
 include '../class/class.email.php';
 $attacker = unserialize (serialize ($_SESSION['User']));
 if($attacker->getTrial()==0) {
-    #echo '<script type="text/javascript"> alert("Reminder:You have exceeded 45 minutes in the experiment"); </script>';
+    echo '<script type="text/javascript"> alert("Reminder:You have exceeded 45 minutes in the experiment"); </script>';
 }
 //Setup the DB Connection Info
 $db = Database::getInstance();
@@ -40,25 +40,54 @@ $sql = "SELECT `Email`, `Subject` FROM `Email` WHERE id = ".$_POST['TempleteID']
 $result = $conn->query($sql)->fetch_assoc();
 $EmailText = $result['Email'];
 $SubjectText = $result['Subject'];
-
 $Current_Capital = 2000;
 $val = ($Current_Capital/4000) * 100;
 $global_percent = $val;
 $_SESSION['User']=$attacker;
+
 ?>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
 <script>
+   
+
     var editor;
     // The instanceReady event is fired when an instance of CKEditor has finished
     // its initialization.
-    CKEDITOR.on( 'instanceReady', function ( ev ) {
-        editor = ev.editor;
-        // Show this "on" button.
-        //document.getElementById( 'readOnlyOn' ).style.display = '';
-        // Event fired when the readOnly property changes.
-    } );
+    $(document).ready(function(){
+            $(window).bind("beforeunload", function(){ return(false); });
+            var d = new Date();
+            document.myForm.starttime.value = d.getTime();
+       });
+    
 
+    CKEDITOR.on('instanceCreated',function(ev){
+        console.log('created');
+        var arr = [];
+        var start = null;
+        ev.editor.on('contentDom', function(e) {
+            e.editor.document.on('keydown',function(event){
+                if (!start) {//checking is a new user input
+                    start = $.now();
+                }
+            });
+            e.editor.document.on('keyup',function(event){
+                var timeElapsed = $.now() - start;
+                if (timeElapsed<2000){
+                    arr.push(timeElapsed);
+                }
+                start = null;//start the next  timing tracking
+                const arrAvg = arr.reduce((a,b) => a + b, 0) / arr.length;
+                const len = arr.length;
+                console.log(['time elapsed:', timeElapsed, 'ms'].join(' '));
+                console.log(['average ',arrAvg,'ms'].join(' '));
+                console.log(arr.length);
+                document.myForm.keystroke.value = Math.floor(arrAvg * 10000) / 10000 ;
+                document.myForm.numtyping.value = len;
+                });
+            });
+        });
     function toggleReadOnly( isReadOnly ) {
-
         editor.setReadOnly( isReadOnly );
     }
 
@@ -66,8 +95,9 @@ $_SESSION['User']=$attacker;
         $(window).bind("beforeunload", function(){ return(false); });
     });
 
+
     function onsubmitform() {
-        if($('input[type=checkbox]:checked').length == 0)
+        if($('input[type=checkbox]:checked').length == 0)//******same method on the user-end
         {
             alert( "Please choose all applicable strategies to proceed" );
             return false;
@@ -75,26 +105,40 @@ $_SESSION['User']=$attacker;
             // grab the value of the hidden donecheck element
             <?php ?>
             $(window).unbind('beforeunload');
+            var d = new Date();
+            document.strategyq.starttime.value = d.getTime();
+
         }
     }
+
     function Q1_click(){
         $("#Button1").hide();
-        <?php $Email->setAttackFinishTS(time());$_SESSION['Email'] = $Email;?>
         var parent = $("#questions");
         var divs = parent.find("label");
         console.log('pass');
         while (divs.length) {
             parent.append(divs.splice(Math.floor(Math.random() * divs.length), 1)[0]);
         }
+
+        //time stamp
+        $(window).unbind('beforeunload');
+        var d = new Date();
+        document.myForm.endtime.value = d.getTime();
+
         $("#strategyq").show();
         $("#launchB").show();
         toggleReadOnly();
     }
+    
 </script>
+
 <body>
-<form method="post" name="myForm1" id="myForm1" action="Scoring.php" onsubmit="return onsubmitform();">
+<form method="post" name="myForm" id="myForm" action="Scoring.php" onsubmit="return onsubmitform();">
     <input type="hidden" id="starttime" name="starttime" value="">
-        <input type="hidden" name="endtime" value="">
+    <input type="hidden" name="endtime" value="">
+    <input type="hidden" id="keystroke" name="keystroke" value="">
+    <input type="hidden" id="numtyping" name="numtyping" value="">
+
     <!--Title and score part of the page -->
     <div name="wrapper" id="wrapperC">
         <h1>Phishing Attacker Console</h1>
@@ -111,12 +155,11 @@ $_SESSION['User']=$attacker;
         </div>
         <label id="Instruction1" style="color: Red;font-size:Medium;font-weight: bold; font-style: italic " ><?php if($Practice==1) {echo "This bar will tell you how much points you have accumulated(min and max possible is also shown for reference)";} ?></label>
 
-
         <input type="hidden" name="Capital" id="Capital" value="<?php echo $Current_Capital; ?>"/>
         <br /><br />
         <label name="Subjectline" id="Subjectline" style="font-size:medium;font-weight: bold">Subject:</label> <input type="text" name="Subject" id="Subject" style="width: 500px; border-style: solid; border-width: medium" value="<?php echo $SubjectText; ?>" > <label id="Instruction" style="color: Red;font-size:Medium;font-weight: bold; font-style: italic " ><?php if($Practice==1) {echo "<---- Edit the subject line of the email here";} ?></label><br>
         <textarea name="email1" id="email1" rows="50" cols="150" class="ckeditor"> <?php echo $EmailText
-         #presetting email content?> </textarea> <label id="Instruction" style="color: Red;font-size:large;font-weight: bold; font-style: italic " ><?php if($Practice==1) {echo "Edit the main body of the email here. You can use the formatting options available at the top of the box.";} ?></label>
+         #presetting email content?> </textarea> <label id="Instruction" style="color: Red;font-size:large;font-weight: bold; font-style: italic " ><?php if($attacker->getTrial()==1) {echo "Edit the main body of the email here. You can use the formatting options available at the top of the box.";} ?></label>
         <!-- <script type="text/javascript">
             CKEDITOR.replace( 'email1' );
         </script> -->
@@ -148,7 +191,14 @@ $_SESSION['User']=$attacker;
             <label style="font-size: medium;"> <input id="C_13" name="checkboxes[]" type="checkbox" value="OHelp" />Offer help/assistance<br /></label>
             <label style="font-size: medium;"> <input id="C_14" name="checkboxes[]" type="checkbox" value="Other" />Other<br /></label>
         </div>
-        <br />
+        <h2 style="text-align: left;">How confident are you on accomplishing the goal with this attempt
+        <div id ="metacognition" name = "metacognition">
+            <label style="font-size: medium;"><input type="checkbox" name="checkboxes1[]" value=1>No Confidence</label><br>
+            <label style="font-size: medium;"><input type="checkbox" name="checkboxes1[]" value=2>Medium Confidence</label><br>
+            <label style="font-size: medium;"><input type="checkbox" name="checkboxes1[]" value=3>Confidence</label><br>
+            <label style="font-size: medium;"><input type="checkbox" name="checkboxes1[]" value=4>Highly Confidence</label><br>
+        </div>
+        <br/>
         <!--<button id="Button2" onclick="Q2_click(); return false;" style="font-size: large">Submit</button>-->
     </div>
 

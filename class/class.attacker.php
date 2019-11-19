@@ -9,6 +9,8 @@ class Attacker extends User
 
 	private $ProfileType;
   private $Trial=0;
+  private $self_eval;
+
 
 	function __construct($ID)
 	{
@@ -16,6 +18,11 @@ class Attacker extends User
     $this->setProfileType();
     #set profile_type;
 	}
+
+  public function setSelf_eval($self_eval){
+    $this->self_eval = $self_eval;
+  }
+  
 
   public function nextTrial(){
     $num = $this->Trial;
@@ -86,7 +93,8 @@ class Attacker extends User
       echo "2";
       $sql = $this->genSQLIN();
     }
-    $conn->query($sql);
+    echo $sql;
+    #$conn->query($sql);
   }
 
   private function genSQLIN(){

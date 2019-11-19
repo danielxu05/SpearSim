@@ -4,11 +4,13 @@
    * 
    */
 include 'class.rater.php';
-  class EmailClassification 
+class EmailClassification 
   {
-  	private $Rater;
+  	private $RaterID;
 
   	private $PhishID;
+
+    private $spearIndicator;
 
     private $PairID;
 
@@ -50,19 +52,25 @@ include 'class.rater.php';
 
     private $other;
 
-    private $decisiontime;
+    private $Starttime;
 
-  	function __construct(argument)
-  	{
-  		
-  	}
+    private $Endtime;
 
-    public function getRater(){
+  function __construct($RaterID)
+  {
+  	$this->RaterID = $RaterID;
+  }
+
+  public function setspearIndicator($spearIndicator){
+    $this->spearIndicator = $spearIndicator;
+  }
+
+  public function getRaterID(){
     return $this->Rater;
   }
 
-  public function setRater($Rater){
-    $this->Rater = $Rater;
+  public function setRaterID($RaterID){
+    $this->RaterID = $RaterID;
   }
 
   public function getPhishID(){
@@ -233,12 +241,36 @@ include 'class.rater.php';
     $this->other = $other;
   }
 
-  public function getDecisiontime(){
-    return $this->decisiontime;
+  public function getStarttime(){
+    return $this->Starttime;
   }
 
-  public function setDecisiontime($decisiontime){
-    $this->decisiontime = $decisiontime;
+  public function setStarttime($Starttime){
+    $this->Starttime = $Starttime;
+  }
+
+  public function getEndtime(){
+    return $this->Endtime;
+  }
+
+  public function setEndtime($Endtime){
+    $this->Endtime = $Endtime;
+  }
+
+  public function insertDB(){
+    $db = Database::getInstance();
+    $conn = $db->getConnection(); 
+    $array = get_object_vars($this);
+    $part1 = "INSERT INTO `UserClassification`";
+    $keys = "";
+    $values = "";
+    foreach ($array as $key => $value) {
+      $keys = $keys." ".$key.",";
+      $values = $values."'".$value."',";
+    }
+    $sql = $part1.'('.substr($keys, 0, -1).') VALUES ('.substr($values, 0,-1).');';
+    $conn->query($sql);
+    return $sql;
   }
 
   }  
