@@ -3,7 +3,7 @@ session_start();
 #include '../class/class.user.php';
 include "../class/class.attacker.php";
 $MTId= $_GET["MTId"];
-$attacker = new Attacker($MTId);
+$attacker = new Attacker($MTId,'A','B','C');
 #if ($attacker->checkAttackersql()->num_rows > 0) {
 #    header('Location: Error.html');
 #}else{

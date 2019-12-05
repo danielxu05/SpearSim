@@ -4,6 +4,7 @@
    * 
    */
 include 'class.rater.php';
+#class file for email classification
 class EmailClassification 
   {
   	private $RaterID;

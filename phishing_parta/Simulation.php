@@ -12,42 +12,116 @@
 </head>
 
 <?php 
+
 ini_set("memory_limit","512M");
 $StartTime = time();
 include '../class/class.email.php';
 $attacker = unserialize (serialize ($_SESSION['User']));
-if($attacker->getTrial()==0) {
+var_dump($attacker);
+$attacker->nextTrial();
+if($attacker->getTrial()==1) {
     echo '<script type="text/javascript"> alert("Reminder:You have exceeded 45 minutes in the experiment"); </script>';
 }
 //Setup the DB Connection Info
 $db = Database::getInstance();
 $conn = $db->getConnection(); 
-$attacker->nextTrial();
-$Practice_I = 0;
 #$Attacker,$Templete,$Practice_I,$Status,$AttackStartTS
 echo "<br><br>";
-$Email = new Email($attacker,$_POST['TempleteID'],$Practice_I,0,$StartTime);
-#var_dump($Email);
-#if($attacker->getTrial()>1){
-#}elseif($attacker->getTrial()>1 and $attacker->getTrial()<2 ){
-    #practice Trial 
-#}else
-$EmailText = "preset";
-$SubjectText ="preset";
+
+echo "Trial number: ".$attacker->getTrial();
 
 
-$sql = "SELECT `Email`, `Subject` FROM `Email` WHERE id = ".$_POST['TempleteID'];
-$result = $conn->query($sql)->fetch_assoc();
-$EmailText = $result['Email'];
-$SubjectText = $result['Subject'];
 $Current_Capital = 2000;
 $val = ($Current_Capital/4000) * 100;
 $global_percent = $val;
+$EmailText = "preset";
+$SubjectText ="preset";
+$TempleteID = $_POST['TempleteID'];
+$TempleteID = 3; 
+$goallist = array('Practice Goal','Your first mission is to get the username and password to the work account of each target. You will get only one attempt with each target. You will be rewarded handsomely. ','Your second mission is to get the persuade your targets to download an attachment. You will get only one attempt with each target. You will be rewarded handsomely.','Your third goals is to ' );
+#$templeID
+$targetlist = array($attacker->getTargetID1(), $attacker->getTargetID2(),$attacker->getTargetID3());
+
+var_dump($_SESSION['goalorder']);
+var_dump($_SESSION['targetorder']);
+$Email = new Email($attacker,$attacker->getTrial(),0);
+
+#view for the trial
+if(($attacker->getTrial()-2)%3 ==1 or $attacker->getTrial()==1){
+    #Templete ID is depend on the target 
+    $sql = "SELECT `Email`, `Subject` FROM `Email` WHERE id = ".$TempleteID;
+    $result = $conn->query($sql)->fetch_assoc();
+    #each start of the trial update 
+    $array = $_SESSION['targetorder'];
+    shuffle($array);
+    $_SESSION['targetorder'] = $array;
+}else{
+    $result = $Email->getTrialCont($attacker->getTrial()-1)->fetch_assoc();
+    $result['Email'] = $result['EmailCont'];
+}
+$goaltext = $goallist[$attacker->getTrial()/3];
+
+if($attacker->getTrial()>=0 and $attacker->getTrial()<=2){
+    echo "practice Trial";
+    $Email->setPractice_I(1);
+    $Email->setStatus(1);
+}else{
+    $subTrial = ($attacker->getTrial()-2)%3;
+    echo "value of SubTrial ".$subTrial;
+    echo "<br>";
+    var_dump($_SESSION['targetorder']);
+    echo "Target ".$targetlist[$subTrial];
+    $Email->setTargetID($targetlist[$subTrial]);
+    $Email->setPractice_I(0);
+    if($attacker->getTrial()>2 and $attacker->getTrial()<=5){
+        echo "Experiment1";
+    }elseif($attacker->getTrial()>5 and $attacker->getTrial()<=8){
+        echo "Experiment2";
+    }elseif($attacker->getTrial()>8 and $attacker->getTrial()<=11){
+        echo "Experiment3";
+    }else{
+        echo "<script>window.location = 'ThankYou.php';</script>";
+    }
+}
+
+
+
+
+$EmailText = $result['Email'];
+$SubjectText = $result['Subject'];
 $_SESSION['User']=$attacker;
-
+$_SESSION['Email'] = $Email;
 ?>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
+<!-- Display the countdown timer in an element -->
+<script>
+// Set the date we're counting down to
+var minutes = 10
+var countDownDate = new Date().getTime()+minutes*800;
+// Update the count down every 1 second
+var x = setInterval(function() {
+  // Get today's date and time
+  var now = new Date().getTime();
+  // Find the distance between now and the count down date
+  var distance = countDownDate - now;
+  // Time calculations for days, hours, minutes and seconds
+  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  // Display the result in the element with id="demo"
+  document.getElementById("demo").innerHTML = days + "d " + hours + "h "
+  + minutes + "m " + seconds + "s ";
+  // If the count down is finished, write some text
+  if (distance < 0) {
+    clearInterval(x);
+    document.getElementById("demo").innerHTML = "You Finished the Edit, please select the strategies you used and go to the next trial. ";
+    Q1_click();
+  }
+}, 1000);
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
    
 
@@ -59,7 +133,22 @@ $_SESSION['User']=$attacker;
             var d = new Date();
             document.myForm.starttime.value = d.getTime();
        });
+    window.onbeforeunload = function() {
+        alert( "Dude, are you sure you want to leave? Think of the kittens!");
+    }
     
+    CKEDITOR.on( 'instanceReady', function ( ev ) {
+        editor = ev.editor;
+
+        // Show this "on" button.
+        document.getElementById( 'readOnlyOn' ).style.display = '';
+
+        // Event fired when the readOnly property changes.
+        editor.on( 'readOnly', function () {
+            document.getElementById( 'readOnlyOn' ).style.display = this.readOnly ? 'none' : '';
+            document.getElementById( 'readOnlyOff' ).style.display = this.readOnly ? '' : 'none';
+        } );
+    } );
 
     CKEDITOR.on('instanceCreated',function(ev){
         console.log('created');
@@ -87,6 +176,7 @@ $_SESSION['User']=$attacker;
                 });
             });
         });
+
     function toggleReadOnly( isReadOnly ) {
         editor.setReadOnly( isReadOnly );
     }
@@ -103,7 +193,6 @@ $_SESSION['User']=$attacker;
             return false;
         }else {
             // grab the value of the hidden donecheck element
-            <?php ?>
             $(window).unbind('beforeunload');
             var d = new Date();
             document.strategyq.starttime.value = d.getTime();
@@ -133,6 +222,7 @@ $_SESSION['User']=$attacker;
 </script>
 
 <body>
+<p id="demo"></p>
 <form method="post" name="myForm" id="myForm" action="Scoring.php" onsubmit="return onsubmitform();">
     <input type="hidden" id="starttime" name="starttime" value="">
     <input type="hidden" name="endtime" value="">
@@ -143,7 +233,11 @@ $_SESSION['User']=$attacker;
     <div name="wrapper" id="wrapperC">
         <h1>Phishing Attacker Console</h1>
         <label id="Instruction0" style="color: Red;font-size:LARGE;font-weight: bold; font-style: italic " ><?php if($_SESSION['Trial']==1) {echo "(This is a practice trial)";} ?></label>
+        <p>Goal for this Trial: <?php echo $goaltext;?></p>
+        <h2>Target Information:</h2>
+        <p><?php echo $targetinfo;?></p>
     </div>
+
 
     <!--Email part of the page -->
     <div name="wrapper" id="wrapper">
@@ -191,13 +285,19 @@ $_SESSION['User']=$attacker;
             <label style="font-size: medium;"> <input id="C_13" name="checkboxes[]" type="checkbox" value="OHelp" />Offer help/assistance<br /></label>
             <label style="font-size: medium;"> <input id="C_14" name="checkboxes[]" type="checkbox" value="Other" />Other<br /></label>
         </div>
+        <h2 style="text-align: left;">Did you use the information directly or undirectly?
+        <div id ="metacognition" name = "metacognition">
+            <label style="font-size: medium;"><input type="radio" name="info" value=0>Directly</label><br>
+            <label style="font-size: medium;"><input type="radio" name="info" value=1>Undirectly</label><br>
+        </div>
         <h2 style="text-align: left;">How confident are you on accomplishing the goal with this attempt
         <div id ="metacognition" name = "metacognition">
-            <label style="font-size: medium;"><input type="checkbox" name="checkboxes1[]" value=1>No Confidence</label><br>
-            <label style="font-size: medium;"><input type="checkbox" name="checkboxes1[]" value=2>Medium Confidence</label><br>
-            <label style="font-size: medium;"><input type="checkbox" name="checkboxes1[]" value=3>Confidence</label><br>
-            <label style="font-size: medium;"><input type="checkbox" name="checkboxes1[]" value=4>Highly Confidence</label><br>
+            <label style="font-size: medium;"><input type="radio" name="selfeval" value=1>No Confidence</label><br>
+            <label style="font-size: medium;"><input type="radio" name="selfeval" value=2>Medium Confidence</label><br>
+            <label style="font-size: medium;"><input type="radio" name="selfeval" value=3>Confidence</label><br>
+            <label style="font-size: medium;"><input type="radio" name="selfeval" value=4>Highly Confidence</label><br>
         </div>
+
         <br/>
         <!--<button id="Button2" onclick="Q2_click(); return false;" style="font-size: large">Submit</button>-->
     </div>

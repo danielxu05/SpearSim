@@ -6,11 +6,10 @@ $db = Database::getInstance();
 $conn = $db->getConnection(); 
 $rater = unserialize(serialize($_SESSION['Rater']));
 $emailclassification = unserialize(serialize($_SESSION['email']));
-print_r($_POST);
 if ($_SESSION['Spear']==1){
 	#update status
 	$sql = 'UPDATE Spear_Phishing SET Status = 1 WHERE id='.$_SESSION["emailID"];
-	#echo $sql;
+//	echo $sql;
 	$result = $conn->query($sql);
 	#insert reuslt 
 }
@@ -18,10 +17,7 @@ if ($_SESSION['Spear']==1){
 #insert into user Classification
 $sql1 = "INSERT INTO UserClassification (PhishID, RaterID, Response,spear_phishing_indicator) VALUES ('".$_SESSION['emailID']."','".$ID."','".$_POST['label1']."','".$_SESSION['Spear']."');";
 $result1 = $conn->query($sql1);
-print_r($_SESSION);
 $output3 = $_POST['label3'];
-echo "<br>";
-var_dump($output3);
 $emailclassification->setResponse($_POST['label1']);
 $emailclassification->setConfidence($_POST['label2']);
 $emailclassification->setStarttime($_POST['starttime']);
@@ -132,7 +128,7 @@ if(!empty($output3)) {
         $emailclassification->setOther(0);
     }
 }
-echo $emailclassification->insertDB();
+$emailclassification->insertDB();
 header("Location: ./ClassificationTask.php");
 
 ?>

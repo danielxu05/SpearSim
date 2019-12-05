@@ -34,20 +34,18 @@ echo "<Br>";
 if ($result3->num_rows > 0) {
     // output data of each row
     $row = $result3->fetch_assoc();
+    $_SESSION['Spear']=1;
+    $_SESSION["emailID"] = $row['id'];
     echo "Spear";
     $emailclassification->setspearIndicator(1);
-    $rater->NextSpear_eval_num();
 } elseif ($result3->num_rows==0){
     //get the email list from the row
-    echo "hao";
     $EmailIDs = $rater->getEmailList();
-    echo "1";
     $emailclassification->setspearIndicator(0);
-    echo "2";
-    $rater->NextNon_Spear_eval_num();
-    echo "3";
+    $_SESSION['Spear'] =0;
+
     $sql2 = "SELECT * from EmailPool WHERE id IN (".implode(',',$EmailIDs).") AND id NOT in 
-    (SELECT PhishID FROM UserClassification WHERE RaterID = '".$rater->getUserID()."' and spear_phishing_indicator = 0);";
+    (SELECT PhishID FROM UserClassification WHERE RaterID = '".$rater->getUserID()."');";
     #ORDER BY RAND();
     echo "<Br>";
     $result2 = $conn->query($sql2);

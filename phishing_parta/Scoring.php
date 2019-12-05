@@ -13,23 +13,20 @@ session_start();
 ini_set("memory_limit","512M");
 include('../class/class.email.php');
 
-var_dump($_POST);
 //Setup the DB Connection Info
 $db = Database::getInstance();
 $conn = $db->getConnection(); 
 $email = unserialize(serialize($_SESSION['Email']));
 $attacker = unserialize (serialize ($_SESSION['User']));
-$email->setEmailCont($_POST['email1']);
-$email->setSubject($_POST['Subject']);
 
+$email1=$_POST['email1'];
+$Subject = $_POST['Subject'];
+
+$email->setEmailCont($email1);
+$email->setSubject($Subject);
 $email->setAttackStartTS($_POST['starttime']);
 $email->setAttackFinishTS($_POST['endtime']);
 $email->setKeyStroke($_POST['keystroke']);
-
-echo "<br>";
-$email->insertDB();
-echo "<br>Done";
-
 
 function leven($s1,$s2){
     $l1 = strlen($s1);                    // Länge des $s1 Strings
@@ -47,70 +44,94 @@ function leven($s1,$s2){
     return $dis[$l2];
 }
 
-
-$Status =0;
-
-$ValueString = "";
+#set the selfeval;
 if(!empty($_POST['checkboxes'])) {
     // Loop to store and display values of individual checked checkbox.
-    If(in_array("Deadline",$_POST['checkboxes']))
-    {$ValueString = $ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("Deadline",$_POST['checkboxes'])){
+        $email->setDeadline(1);
+    }else{
+        $email->setDeadline(0);
+    }
 
-    If(in_array("Positive",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("Positive",$_POST['checkboxes'])){
+        $email->setPositive(1);
+    }else{
+        $email->setPositive(0);
+    }
 
-    If(in_array("Negative",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("Negative",$_POST['checkboxes'])){
+        $email->setNegative(1);
+    }else{
+        $email->setNegative(0);
+    }
 
-    If(in_array("Authority",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("Authority",$_POST['checkboxes'])){
+        $email->setAuthority(1);
+    }else{
+        $email->setAuthority(0);
+    }
 
-    If(in_array("Friend",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("Friend",$_POST['checkboxes'])){
+        $email->setFriend(1);
+    }else{
+        $email->setFriend(0);
+    }
 
-    If(in_array("Interest",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("Interest",$_POST['checkboxes'])){
+        $email->setInterest(1);
+    }else{
+        $email->setInterest(0);
+    }
 
-    If(in_array("Failure",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("Failure",$_POST['checkboxes'])){
+        $email->setFailure(1);
+    }else{
+        $email->setFailure(0);
+    }
 
-    If(in_array("Deal",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("Deal",$_POST['checkboxes'])){
+        $email->setDeal(1);
+    }else{
+        $email->setDeal(0);
+    }
 
-    If(in_array("IllGains",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("IllGains",$_POST['checkboxes'])){
+        $email->setIllGains(1);
+    }else{
+        $email->setIllGains(0);
+    }
 
-    If(in_array("IllMaterial",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("IllMaterial",$_POST['checkboxes'])){
+        $email->setIllMaterial(1);
+    }else{
+        $email->setIllMaterial(0);
+    }
 
-    If(in_array("Opportunity",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("Opportunity",$_POST['checkboxes'])){
+        $email->setOppotunity(1);
+    }else{
+        $email->setOppotunity(0);
+    }
 
-    If(in_array("RHelp",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("RHelp",$_POST['checkboxes'])){
+        $email->setRHelp(1);
+    }else{
+        $email->setRHelp(0);
+    }
 
-    If(in_array("OHelp",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1,";}
-    else{$ValueString=$ValueString."0,";}
+    if(in_array("OHelp",$_POST['checkboxes'])){
+        $email->setOHelp(1);
+    }else{
+        $email->setOHelp(0);
+    }
 
-    If(in_array("Other",$_POST['checkboxes']))
-    {$ValueString=$ValueString."1";}
-    else{$ValueString=$ValueString."0";}
-
+    if(in_array("Other",$_POST['checkboxes'])){
+        $email->setOther(1);
+    }else{
+        $email->setOther(0);
+    }
 }
-
+$email->insertDB();
 //echo "Text Similarity:".$sim."<br>";
 #echo $Edit."<br>";
 //if($_SESSION["EmailID"] > 1){
@@ -118,10 +139,8 @@ $Button_String1 = "Attack Again";
 $Button_String2 = "Done!";
 date_default_timezone_set("America/New_York");
 header("Content-Type: text/event-stream");
-$counter = rand(1, 10); // a random counter
 //}
 ?>
-
 <body>
 <div id="wrapperC" name="wrapperScore" >
     <form name="myform">
@@ -142,23 +161,27 @@ $counter = rand(1, 10); // a random counter
         <input type="hidden" name="timeval" id="timeval" value=0 />
     </form>
 
-</div>
-</body>
+
 
 <?php  
 while (1) {
 // 1 is always true, so repeat the while loop forever (aka event-loop)
-    $sql3 = "SELECT * From Spear_Phishing Where UserID ='".$attacker->getUserID()."' and Trial = '".$attacker->getTrial()."'";
+    $sql3 = "SELECT Status From Spear_Phishing Where UserID ='".$attacker->getUserID()."' and Trial = '".$attacker->getTrial()."'";
     echo $sql3;
     $result3 = $conn->query($sql3);
-    if ($result3->num_rows ==0){
+    if ($result3->num_rows == 0){
         echo "Nothing return";
     }else{
         $row = $result3->fetch_assoc();
-        var_dump($row['Status']);
+#just for testing purpose;
+        //$row['Status'] =1;
         if($row['Status']==1){
-            echo "done, let's go another page";
-            echo "Successfully Added <a href='Templete.php'>Click Here to Continue</a>";
+            $_SESSION['User']=$attacker;
+            echo "<div >";
+            echo "<p>done, let's go the next Trial</p>";
+            echo "<a href='Simulation.php'>Click Here to Continue</a>";
+            echo "</div></body>";
+            echo "<br><br>";
             break;
         }
     }

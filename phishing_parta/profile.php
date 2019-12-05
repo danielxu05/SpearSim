@@ -20,17 +20,23 @@ include('../class/class.attacker.php');
 $attacker = unserialize (serialize ($_SESSION['User']));
 $type = $attacker->getProfileType();
 if ($type == 'Facebook'){
-   echo "<h4>Facebook</h4>";
-    echo '<img src="Facebook.png">';
+   //echo "<h4>Facebook</h4>";
+    //echo '<img src="Facebook.png">';
+    echo "Experinment 1";
+
 }elseif ($type=='Linkedin') {
-    echo "<h4>LinkedIn</h4>";
-	echo '<img src="LinkedIn1.png">';
-	echo '<img src="LinkedIn2.png">';
-	echo '<img src="LinkedIn3.png">';
+    echo "Experinment 2";
 }elseif ($type == 'Twitter') {
-    echo "<h4>Twitter</h4>";
-	echo '<img src="Twitter.png">';
+
+    echo "Experinment 3";
 }
+$array = array(0,1,2);
+shuffle($array);
+$_SESSION['goalorder'] = $array;
+print_r($array);
+shuffle($array);
+$_SESSION['targetorder'] =$array;
+print_r($array);
 ?>
 </body>
 <form method="get" action="ExperimentBlock.php">

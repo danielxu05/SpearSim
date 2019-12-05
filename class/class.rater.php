@@ -73,7 +73,7 @@ class Rater extends User
 	    $db = Database::getInstance();
 	    $conn = $db->getConnection(); 
       $sql = "SELECT * FROM Spear_Phishing 
-        WHERE `UserID` = '".$this->TargetAttackerID."' and Status =0
+        WHERE `TargetID` = '".$this->getUserID()."' and Status =0
         ORDER BY AttackFinishTS";
       $result = $conn->query($sql);
 	    return $result;

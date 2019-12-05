@@ -9,20 +9,44 @@ class Attacker extends User
 
 	private $ProfileType;
   private $Trial=0;
-  private $self_eval;
+  private $TargetID1;
+  private $TargetID2;
+  private $TargetID3;
 
-
-	function __construct($ID)
+	function __construct($ID,$TargetID1,$TargetID2,$TargetID3)
 	{
 		parent::__construct($ID,'Attacker');
     $this->setProfileType();
+    $this->TargetID1 = $TargetID1;
+    $this->TargetID2 = $TargetID2;
+    $this->TargetID3 = $TargetID3;
     #set profile_type;
 	}
 
-  public function setSelf_eval($self_eval){
-    $this->self_eval = $self_eval;
-  }
   
+  public function setTargetID1($TargetID1){
+    $this->TargetID1 = $TargetID1;
+  }
+
+  public function getTargetID1(){
+    return $this->TargetID1;
+  }
+
+  public function setTargetID2($TargetID2){
+    $this->TargetID2 = $TargetID2;
+  }
+
+  public function getTargetID2(){
+    return $this->TargetID2;
+  }
+
+  public function setTargetID3($TargetID3){
+    $this->TargetID3 = $TargetID3;
+  }
+
+  public function getTargetID3(){
+    return $this->TargetID3;
+  }
 
   public function nextTrial(){
     $num = $this->Trial;
