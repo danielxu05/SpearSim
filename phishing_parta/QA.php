@@ -1,162 +1,205 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
-<head>
-    <title></title>
-    <link href="Style.css" rel="stylesheet">
-    <script src="jquery-3.1.0.min.js"></script>
-    <script src="UI/jquery-ui.js"></script>
-    <script src="Deception.js"></script>
-    <meta charset="UTF-8">
-    <meta name="description" content="Attacker EXP">
-    <meta name="author" content="Rajivan">
-</head>
-<script type="text/javascript">
-    $(document).ready(function(){
-        $(window).bind("beforeunload", function(){ return(false); });
-    });
-    function onsubmitform() {
-        $(window).unbind('beforeunload');
-    }
-</script>
 <?php
-session_start();?>
+session_start();
+?>
+<head>
+<link rel="stylesheet" type="text/css" href="Style.css">
+</head>
+
+<script type="text/javascript">
+
+function validateForm()	{
+	var goal_array = document.getElementsByName('goal');
+	var points_array = document.getElementsByName('points');
+	var diff_array = document.getElementsByName('diff');
+	var goal_filled = false;
+	var points_filled = false;
+	var diff_filled = false;
+	if (goal_array[0].checked || goal_array[1].checked|| goal_array[2].checked|| goal_array[3].checked){ goal_filled= true } 
+	if (points_array[0].checked || points_array[1].checked || points_array[2].checked|| points_array[3].checked){ points_filled= true	}
+	if (diff_array[0].checked || diff_array[1].checked){ diff_filled= true	}
+	if (!(goal_filled && points_filled && diff_filled)) { 
+		alert('Please answer all the questions.');
+		return false;
+	}
+	
+		
+}
+</script>
+
+<script>
+function displayQuestion1()	{
+	var val = "";
+	var val_array = document.getElementsByName('diff');
+	for (var i=0; i < val_array.length; i++)	{
+		if (val_array[i].checked)
+			val = val_array[i].value;
+	}
+	if(val_array[1].checked)
+		{
+		document.getElementById('q1_answer').style.color = "red";
+		document.getElementById('q1_answer').style.display = "block";
+		}
+		else
+		{
+			document.getElementById('q1_answer').style.display = "block";
+		}
+	
+	if(val_array[0].checked)
+	{document.getElementById("diff2").disabled=true;}
+	
+	if(val_array[1].checked)
+	{document.getElementById("diff1").disabled=true;}
+
+}
+				
+</script>
+
+<script>
+
+function displayQuestion2()	{
+	var val = "";
+	
+	var val_array = document.getElementsByName('points');
+	
+	for (var i=0; i < val_array.length; i++)	{
+		if (val_array[i].checked)
+			val = val_array[i].value;
+	}
+	if(val_array[2].checked)
+		{
+
+		document.getElementById('q2_answer').style.display = "block";
+		}
+		else
+		{
+			document.getElementById('q2_answer').style.color = "red";
+			document.getElementById('q2_answer').style.display = "block";
+		}
+	
+	if(val_array[0].checked)
+	{document.getElementById("points2").disabled=true;
+	document.getElementById("points3").disabled=true;
+	document.getElementById("points4").disabled=true;}
+	
+	if(val_array[1].checked)
+	{document.getElementById("points1").disabled=true;
+	document.getElementById("points3").disabled=true;
+	document.getElementById("points4").disabled=true;}
+	
+	if(val_array[2].checked)
+	{document.getElementById("points1").disabled=true;
+	document.getElementById("points2").disabled=true;
+	document.getElementById("points4").disabled=true;}
+	 
+	if(val_array[3].checked)
+	{document.getElementById("points1").disabled=true;
+	document.getElementById("points2").disabled=true;
+	document.getElementById("points3").disabled=true;}
+}
+				
+</script>
+
+<script>
+function displayQuestion3()	{
+	var val = "";
+	var val_array = document.getElementsByName('goal');
+	for (var i=0; i < val_array.length; i++)	{
+		if (val_array[i].checked)
+			val = val_array[i].value;
+	}
+	if(val_array[0].checked ||val_array[1].checked || val_array[3].checked)
+		{
+		document.getElementById('q3_answer').style.color = "red";
+		document.getElementById('q3_answer').style.display = "block";
+		}
+		else
+		{
+			document.getElementById('q3_answer').style.display = "block";
+		}
+		if(val_array[0].checked)
+	{document.getElementById("goal2").disabled=true;
+    document.getElementById("goal3").disabled=true;
+    document.getElementById("goal4").disabled=true;}
+	
+	if(val_array[1].checked)
+	{document.getElementById("goal1").disabled=true;
+    document.getElementById("goal3").disabled=true;
+    document.getElementById("goal4").disabled=true;}
+	
+	if(val_array[2].checked)
+	{document.getElementById("goal1").disabled=true;
+    document.getElementById("goal2").disabled=true;
+    document.getElementById("goal4").disabled=true;}
+
+    if(val_array[3].checked)
+	{document.getElementById("goal1").disabled=true;
+    document.getElementById("goal2").disabled=true;
+    document.getElementById("goal3").disabled=true;}
+}
+				
+</script>
+
+
+<html>
 <body>
-<div id="wrapperC">
-    <h2>Please answer the following questions</h2></div>
-    <!--<div id="toggle"> -->
-    <label id="Error1" name="Error1" style="color:red; display:none;">Please answer the question to continue</label>
-    <label id="Error2" name="Error2" style="color:red; display:none;">Wrong Answer. Please try again: </label>&nbsp;&nbsp;&nbsp;&nbsp;
-    <!-- </div> -->
-    <button id="ButtonIns" onclick="Ins_click();return false;" style="font-size: small; display:none;">
-        View Experiment Instructions
-    </button>
-
-<div id="wrapperL">
-    <div id="Question1">
-        <input type="hidden" id="Q1h" name="Q1h" value="0" />
-    <h2>Q1: What is the name of your role in this study?
-    </h2>
-        <label style="font-size: 20px;"><input type="radio" name="role" value="Def">Defacer</label> <br />
-        <label style="font-size: 20px;"><input type="radio" name="role" value="hat">White Hat</label> <br />
-        <label style="font-size: 20px;"><input type="radio" name="role" value="Phi">Phisher</label> <br />
-        <label style="font-size: 20px;"><input type="radio" name="role" value="Defe">Defender</label> <br />
-
-        <label name="Correct1" id="Correct1" style="color:green; display:none;">You are correct! - You will be playing the role of a "Phisher" who uses phishing attacks to deceive people</label><br />
-        <br />
-        <button id="Button1" onclick="Q1_click();return false;" style="font-size: large">
-            Submit
-            </button>
-    </div>
-
-    <div id="Question2" style="display:none;">
-        <input type="hidden" id="Q2h" name="Q2h" value="0" />
-        <h2>Q2: During each trial in the study, choose all applicable activities you would be performing:
-        </h2>
-        <label style="font-size: 20px;"><input type="checkbox" name="Pactivities" value="Write"> Write a phishing email attack</label> <br>
-        <label style="font-size: 20px;"><input type="checkbox" name="Pactivities" value="Reply"> Reply to emails</label> <br>
-        <label style="font-size: 20px;"><input type="checkbox" name="Pactivities" value="Launch"> Launch phishing attacks</label> <br>
-        <label style="font-size: 20px;"><input type="checkbox" name="Pactivities" value="Feedback"> Get feedback on your success</label> <br>
-        <label style="font-size: 20px;"><input type="checkbox" name="Pactivities" value="Build"> Build a phishing website</label> <br>
-
-        <label name="Correct2" id="Correct2" style="color:green; display:none;">You are correct! - During each trial, you will (1) Write a phishing email attack, (2) Launch phishing attacks and (3) Get feedback on your success.
-          <br />  You <i>will not</i> be replying to mails and <i>will not</i> be building a website </label><br />
-        <br />
-        <button id="Button2" onclick="Q2_click();return false;" style="font-size: large">
-            Submit
-        </button>
-    </div>
-
-    <div id="Question3" style="display:none;">
-        <input type="hidden" id="Q3h" name="Q3h" value="0" />
-    <h2>Q3: Choose all the applicable strategies you must use to earn rewards in each trial in the experiment:
-    </h2>
-        <label style="font-size: 20px;"><input type="checkbox" name="Strategies" value="Creative"> Be creative with words in the email</label> <br />
-        <label style="font-size: 20px;"><input type="checkbox" name="Strategies" value="Change"> Evade detection by changing email content</label> <br />
-        <label style="font-size: 20px;"><input type="checkbox" name="Strategies" value="Reuse"> Evade detection by reusing email content</label> <br />
-        <label style="font-size: 20px;"><input type="checkbox" name="Strategies" value="Deceive"> Lure users to respond through persuasion</label> <br />
-        <label style="font-size: 20px;"><input type="checkbox" name="Strategies" value="Exploit"> Exploit weaknesses in human psychology and emotions to deceive people</label> <br />
-
-        <label name="Correct3" id="Correct3" style="color:green; display:none;">You are correct! - You have to change the email content to evade detection. You have to be creative with words and exploit human emotions to deceive people.
-            <br />  Reusing emails is <i> least likely </i> to give you rewards </label><br />
-        <br />
-        <button id="Button3" onclick="Q3_click();return false;" style="font-size: large">
-            Submit
-        </button>
-    </div>
 
 
-    <div id="Question4" style="display:none;">
-        <input type="hidden" id="Q4h" name="Q4h" value="0" />
-        <h2>Q4: What is the cost for launching each attack?</h2>
-        <label style="font-size: 20px;"><input type="radio" name="point" value="100">100 points</label><br />
-        <label style="font-size: 20px;"><input type="radio" name="point" value="150">150 points</label><br />
-        <label style="font-size: 20px;"><input type="radio" name="point" value="200">200 points</label><br />
-        <label style="font-size: 20px;"><input type="radio" name="point" value="250">250 points</label><br />
 
-        <label name="Correct4" id="Correct4" style="color:green; display:none;">You are correct! - You will be paying 200 points for launching each attack</label><br />
+<form action="ExperimentBlock.php" method="post" onsubmit="return validateForm()">
+	
+	<table border="1" cellpadding="10" cellspacing="0" style="width: 810px;" align="center">
+		<tr>
+		<td>
+		<div align="center">
+		<h2>Questionnaire about instructions</h2>
+	</div>
+			<div align="justify">	
+				
+				<b><label style="color:#444499;">Q1. You will target <u>one</u> end-user in each trial?</label></b><br>
+				<input type="radio" id="diff1" name="diff" value="1" onclick="displayQuestion1()"> True
+				<br>
+				<input type="radio" id="diff2" name="diff" value="2" onclick="displayQuestion1()"> False
+				<br>
+				<div id="q1_answer" style="color:green;display:none">You will only target <u>one</u> end-user in each trial.</div>
+				<br> <br>
+				
 
-        <br />
-        <button id="Button4" onclick="Q4_click();return false;" style="font-size: large">
-            Submit
-        </button>
-    </div>
+				<b><label style="color:#444499;">Q2. What of the following <u>will not be available</u> to you in each trial?</label></b><br>
+				<input type="radio" id= "points1" name="points" value="1" onclick="displayQuestion2()">	Personal Information about the target
+				<br>
+				<input type="radio"  id= "points2" name="points" value="2" onclick="displayQuestion2()">	Phishing objective to achieve in that trial
+				<br>
+                <input type="radio"  id= "points3" name="points" value="3" onclick="displayQuestion2()">  Video of target’s current activities<br>
+                <input type="radio"  id= "points4" name="points" value="4" onclick="displayQuestion2()">	Sample phishing email or email from the previous attempt
 
-    <div id="Question5" style="display:none;">
-    <form method="get" action="Simulation.php" onsubmit="return onsubmitform();">
-        <h2>Your training is complete. You Passed!</h2>
-        <h3>Please click the below button to start the experiment.</h3>
-        <input type="submit" name="submit" id="submit" class="btn-style" value="Start Experiment" />
-        <input type="hidden" name="timeval" id="timeval" value=0 />
-    </form>
-    </div>
-</div>
-    <div id="Instructions" style="display:none;">
-        <button id="ButtonClose" onclick="Close_click();return false;" style="font-size: large">
-            <- Return to the question
-        </button> <br/>
-        <h2>Experiment Instructions</h2>
-        <p>You will play the role of a computer hacker (an online criminal) who will use Phishing attacks to deceive others(take someone for a ride). Hence you will be called a <i>“Phisher”</i>
-        </p>
-        <p>Phishers target people through fraudulent, deceptive e-mails that exploit weaknesses of human psychology and emotions. Phishers write e-mails such that it causes regular people (a.k.a victims) to believe what is said in the e-mail. Several victims eventually respond to such emails thereby, compromising their personal security and identity.
-        </p>
-        <p>As a phisher you will be asked to write multiple fraudulent, deceptive emails and launch them repeatedly over several trials/rounds. <b>Your ultimate goal is to make as much money</b> as possible by deceiving other people successfully. After you launch an email in each trial, you will receive feedback about the success and the money you made.
-        </p>
-        <p><b>You will not be actually sending out these emails to real people.</b> It will only be sent to computer simulated humans for research purposes.
-        </p>
-        <p>You will perform 8 trials of "writing phishing emails". A sample will be provided to you at the beginning. Use the initial sample phishing email to edit and write your own phishing emails. During each trial in the experiment you will: (1) write a phishing email attack (2) launch the attack to make money and (3) get feedback on your success.
-        </p>
-        <p>
-            <b>Cost and Gains </b>
-            You will start the task with 2000 points. Each attack will cost you 200 points, so in each trial you will lose 200 points, but you will earn a reward according to how well you meet these two objectives:
-        </p>
-        <ol>
-            <li>Evade/avoid detection by an attack detection software (see figure and read description below) </li>
-            <li>Deceive/trick people to give their personal information (see figure and read description  below) </li>
-        </ol>
-        So after 8 trials you can end up with a <b>maximum of 4000 points and a minimum of 0 points</b> depending on your performance on these objectives.
+				<div id="q2_answer" style="color:green;display:none">Video of target’s current activities will not be provided to you</div>
+				
+				<br><br>			
 
-        <p>
-            <b>Payment</b>
-            Your total points will accumulate across trials. At the end, your total points for performance will be converted to real dollars at a rate of <b>$1 for 1000 points</b>. Your cumulative earnings will be added to your $1.50 base payment.
-        </p>
-        <IMG BORDER="0" SRC="Picture21.png",height="230" width="600">
-        <p>
-            <b>How to evade detection?</b>
-            The detection software is quite simple. It only looks for keywords in emails already known to be associated with phishing emails. Hence, to evade detection, it is recommended <b>that you edit and change your phishing content</b> during each trial. You <i>do not need</i> to change the entire email, but you will need to make, at least, moderate amount of changes to the email content (e.g., couple of sentences). Evading detection is necessary for your phishing email to successfully reach the human on the other end (as shown in figure). Only then you can deceive them and gain maximum rewards.
-        </p>
+			
+				<b><label style="color:#444499;">Q3. Which of the following is <u>not a good strategy</u> to maximize your chance of success? </label></b><br>
+				<input type="radio" id="goal1" name="goal" value="1" onclick="displayQuestion3()">	Use information about the target to personalize the attack
+				<br>
+				<input type="radio" id="goal2" name="goal" value="2" onclick="displayQuestion3()">	Being creative with your phishing story
+				<br>
+				<input type="radio" id="goal3" name="goal" value="3" onclick="displayQuestion3()">	Use the sample phishing email as it is
+                <br>
+                <input type="radio" id="goal4" name="goal" value="4" onclick="displayQuestion3()">	Change your phishing email content in each trial
 
-        <p>
-            <b>How to deceive people?</b>
-            This is entirely up to your judgement and intuition. We ask you to <b>be intuitive and creative</b> about deciding what would <b>persuade and lure</b> a user into clicking the link in the email and providing information. We have observed a variety of phishing tactics that <i>exploit weaknesses in human psychology and emotions</i> (e.g., greed, curiosity, authoritative and urgency); pretend to be friends or colleagues; offer help and opportunity; sound urgent and set deadlines. You don’t have to use complicated words or sentence structure.<br/><br/>
-            Since deception is subjective, you need to keep trying. Sometimes you will get a big reward and other times you might not. However, if you are <i><b>not being creative, deceptive</b></i> or purposeful, you are very <i>unlikely</i> to gain any rewards.
-        </p>
+                <div id="q3_answer" style="color:green;display:none">You should not use the sample phishing email as it is </div>
+				
+				<br><br>
+			</div>
+			<div align="center">
+				<center><button name="submit"  class="btn-style" type="submit" onclick="validateForm()" >Submit</button> </center>
+			</div>
+	
 
-        <br />
-        <button id="ButtonClose" onclick="Close_click();return false;" style="font-size: large">
-            <- Return to the question
-        </button><br />
-    </div>
-
+		</td>
+		</tr>
+		</table>
+</form>
+<br><br><br><br>
 
 </body>
 </html>

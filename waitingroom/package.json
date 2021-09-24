@@ -1,0 +1,30 @@
+{
+  "name": "waitingroom",
+  "version": "1.0.0",
+  "description": "waiting room for spear phishing email experinment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app"
+  },
+  "keywords": [
+    "waiting",
+    "room"
+  ],
+  "author": "Daniel Xu",
+  "license": "ISC",
+  "dependencies": {
+    "alert-node": "^3.0.10",
+    "crypto": "^1.0.1",
+    "ejs": "^3.0.1",
+    "express": "^4.17.1",
+    "io": "^1.0.0",
+    "md5": "^2.3.0",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.2",
+    "package.json": "^2.0.1",
+    "prompt": "^1.0.0",
+    "socket.io": "^2.3.0",
+    "socket.io.users": "^2.0.2"
+  }
+}

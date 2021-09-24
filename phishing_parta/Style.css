@@ -16,10 +16,13 @@ html, body {
 }
 
 #wrapperC{
-    width: 960px;
-    margin: 0 auto;
-    text-align: center;
+    margin-left: 50px;
+    margin-right: 50px;
+    font-size: 20;
+    text-align: left;
+    font-family:Times New Roman;
 }
+
 #strategyq{
     width: 960px;
     margin: 0 auto;
@@ -42,8 +45,11 @@ html, body {
 }
 
 #wrapper{
-    width: 960px;
-    margin: 0 auto;
+    margin-left: 50px;
+    margin-right: 50px;
+
+    text-align: center;
+    font-family:Times New Roman;
 }
 
 #wrapperL{
@@ -112,3 +118,42 @@ if it's not present, don't show loader */
     z-index: 9999;
     background: url(Preloader_1.gif) center no-repeat #fff;
 }
+
+table {width:100%;
+    padding: 20px;    
+    border-radius : 3px;
+    border: 1px solid black;
+}
+td {  padding: 20px;
+    background-color: #f2f2f2;
+      border-style: solid;
+  text-align:center;
+  border: 1px solid black;
+}
+
+
+article {
+  float: left;
+  padding: 20px;
+  background-color: #f1f1f1;
+  height: 300px; 
+  width: 300px; 
+
+  border-style: solid;
+  text-align:center;
+}
+
+
+.header {
+  text-align: center;
+}
+
+
+  
+  /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+  @media screen and (max-width: 600px) {
+    .column.side, .column.middle {
+      width: 100%;
+    }
+  }
+  

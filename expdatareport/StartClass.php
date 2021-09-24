@@ -6,83 +6,12 @@
     <script src="jquery-3.1.0.min.js"></script>
 </head>
 <body>
-<script type="text/javascript">
 
-    function Q1_click() {
-        var val = $("#MTurkID").val();
-        if(val==null || val.trim()==""){
-            alert( "Please provide your MTurk ID" );
-            return false;
-        }
-        else {
-            document.myForm.MTId.value = val.trim();
-            $("#MTurk").hide();
-            $("#start").show();
-            $("#submit").show();
-        }
-    }
-
-    function validate()
-    {
-        if( document.myForm.age.value == false  )
-        {
-            alert( "Please answer all of the questions to proceed" );
-            return false;
-        }
-        if( document.myForm.Understand.value == false )
-        {
-            alert( "Please answer all of the questions to proceed" );
-            return false;
-        }
-
-        if( document.myForm.Participate.value == false  )
-        {
-            alert( "Please answer all of the questions to proceed" );
-            return false;
-        }
-        var txt = "";
-        var txt1 = "";
-        var txt2 = "";
-        var i;
-
-        for (i = 0; i < document.myForm.age.length; i++) {
-            if (document.myForm.age[i].checked) {
-                txt = document.myForm.age[i].value;
-            }
-        }
-
-        for (i = 0; i < document.myForm.Understand.length; i++) {
-            if (document.myForm.Understand[i].checked) {
-                txt1 = document.myForm.Understand[i].value;
-            }
-        }
-
-        for (i = 0; i < document.myForm.Participate.length; i++) {
-            if (document.myForm.Participate[i].checked) {
-                txt2 = document.myForm.Participate[i].value;
-            }
-        }
-        if ( txt === "lt18" || txt1 == "N"|| txt2 == "N" ){
-            document.getElementById('start').style.display = "none";
-            document.getElementById('catnum12').innerHTML = "We are sorry to hear that you don't wish/qualify to participate in our experiment. \nThank You for your interest";
-            return false;
-        }
-        else{
-            return( true );
-        }
-    }
-</script>
 
 <label id="catnum12" style="font-size:x-large; color:black; font-style:italic;" ></label>
 
-<div id="MTurk" style="width:90%; margin-left:auto; margin-right:auto;">
-    <h3>Please enter your Amazon MTurk ID in the text box below to continue</h3>
-    <input type="text" name="MTurkID" id="MTurkID" style="width: 250px; border-style: solid; border-width: medium" value="" /><br/><br/>
-    <button id="ButtonA" class="btn-style" onclick="Q1_click();return false;">
-        Submit
-    </button>
-</div>
-<div id="start" style="width:90%; margin-left:auto; margin-right:auto; display: none; ">
+
+<div id="start" style="width:90%; margin-left:auto; margin-right:auto; ">
     <h2>Email Management</h2>   
     <p>This task is part of a research study conducted by Dr. Cleotilde Gonzalez at Carnegie Mellon University. The purpose of the research is to explore the various factors that affect decisions in the cyber security domain over repeated choices in individuals and competitive situations with more two or more people. This project is funded by the Army Research Laboratory, ARL-CRA-Cylab-Pennsylvania State University.
     </p>
@@ -127,24 +56,9 @@
     <h5><b>Voluntary Participation</b></h5>
     <p>Your participation in this research is voluntary.  You may discontinue participation at any time during the research activity.
     </p>
-    <form name="myForm" method="get" action="Intro.php" onsubmit="return(validate());">
-        <input type="hidden" id="MTId" name="MTId" value="0" />
-        <h3>I am age 18 or older</h3>
-        <input type="radio" name="age" value="mt18"/> Yes<br/>
-        <input type="radio" name="age" value="lt18"/> No<br/>
-        <hr>
-
-        <h3>I have read and understand the information above</h3>
-        <input type="radio" name="Understand" value="Y"/> Yes<br/>
-        <input type="radio" name="Understand" value="N"/> No<br/>
-        <hr>
-
-        <h3>I want to participate in this research and continue with the [survey, game, activity].</h3>
-        <input type="radio" name="Participate" value="Y"/> Yes<br/>
-        <input type="radio" name="Participate" value="N"/> No<br/>
-        <hr>
-
-        <br/><br/>
+    <form name="myForm" method="get" action="Intro.php">
+        <input type="hidden" id="MTId" name="MTId" value="<?php echo($_GET['MTId']); ?>"/>
+       
 
         <input type="submit" name="submit" class="btn-style" value="Submit" />
         <input type="hidden" name="timeval" id="timeval" value=0 />
@@ -152,3 +66,12 @@
 </div>
 </body>
 </html>
+<?php
+include '../class/class.rater.php';
+$rater = new Rater($_GET['MTId']);
+$rater->setWaittime($_GET['waittime']);
+$rater->setStarttime(time());
+$_SESSION['Rater']=$rater;
+$_SESSION['cSpear']=0;
+$rater->insertDB();
+?>

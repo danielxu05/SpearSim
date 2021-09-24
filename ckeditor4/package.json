@@ -1,0 +1,97 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "ckeditor4",
+        "scope": null,
+        "escapedName": "ckeditor4",
+        "name": "ckeditor4",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/nfs/bronfs/uwfs/hw00/d37/brics/phishing/preprocess"
+    ]
+  ],
+  "_from": "ckeditor4@latest",
+  "_hasShrinkwrap": false,
+  "_id": "ckeditor4@4.13.1",
+  "_inCache": true,
+  "_location": "/ckeditor4",
+  "_nodeVersion": "10.13.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/ckeditor4_4.13.1_1575898136319_0.2531267918474731"
+  },
+  "_npmUser": {
+    "name": "cksource",
+    "email": "npm@cksource.com"
+  },
+  "_npmVersion": "6.4.1",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "ckeditor4",
+    "scope": null,
+    "escapedName": "ckeditor4",
+    "name": "ckeditor4",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/ckeditor4/-/ckeditor4-4.13.1.tgz",
+  "_shasum": "f348f6bce2b2f0b8e89b394fa0a4579333e53469",
+  "_shrinkwrap": null,
+  "_spec": "ckeditor4",
+  "_where": "/nfs/bronfs/uwfs/hw00/d37/brics/phishing/preprocess",
+  "author": {
+    "name": "CKSource",
+    "url": "https://cksource.com/"
+  },
+  "bugs": {
+    "url": "https://github.com/ckeditor/ckeditor4/issues"
+  },
+  "dependencies": {},
+  "description": "JavaScript WYSIWYG web text editor.",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "integrity": "sha512-Fslq8yT9YtbIWAnexnW8cTl/fK6QiAbSaimq/iZWS/FAqSyVEJk72+fA4BczCUMx7aj/Wari0vZ8nE1L5akYCQ==",
+    "shasum": "f348f6bce2b2f0b8e89b394fa0a4579333e53469",
+    "tarball": "https://registry.npmjs.org/ckeditor4/-/ckeditor4-4.13.1.tgz",
+    "fileCount": 2746,
+    "unpackedSize": 6795474,
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJd7kwYCRA9TVsSAnZWagAA1TYP/RbP12675yYJD0xMP7Ul\n2lp8so/74OOWDEhs4WpgzQ5SM/CCigoM+j9GXd2aRP7dsvu3h9LRT1UQDPSk\ngwDd1O+BdH5CYee74YqmRkSJ2CY8Ie17B1cHGGVpeJgRb1oH5A+VX8rJPcoo\nbq20YQt4R4Mk4MN86p3xloco/YV/bW30lvowELyFmMXU/BjyTlUtsoFW6P6B\nFu53PprGKnW5VPza6ulvFJo3qTm+hK4q03hIdJkaZbncQSyJrbgSWGm1iCIe\nRunvfBf8fMeuSMtb209pW4vA2e5Bi770Bz+HgOfWkyg/MZgVpO1TLxG6aGXQ\n/6/8TPXo4S0yl7x07IGIfnIjhBoEU663FRd6X3KW0hBm5ZdEElvqsbXGoNvt\nwh6GvmXzHRRau+W3zGGJ8o4PmkcEu60Z2Do2UpvMZYSJ7zylaLhgweTjWefz\n+SVy5DD5S/1tlsDABi5NUNW3SDrFLMXbI7YTFOg11LdzkdzpcuZ96KzuuN8u\nJCw3a4TH/1CHn4RNQ/Agg4KjmO0qAhgsiJvxA5SWmLsQ8NqpMh8L3et6LyJi\noIAYbozJmrqzUZi26K9VEzqFrootLOctzeGeIttHe3BYA/N4w1R04kyL3wy7\nbdS787FYnD3PMYLT8fL07/ToKCFl2dRcoBLeXatm3eHuNWd1xoIZb4Uv2uQW\nPLIH\r\n=jLXq\r\n-----END PGP SIGNATURE-----\r\n"
+  },
+  "gitHead": "83ca48a5356d10cc7aec6a9e36f327b8bc1b5f2a",
+  "homepage": "https://ckeditor.com/ckeditor-4/",
+  "keywords": [
+    "ckeditor4",
+    "ckeditor",
+    "fckeditor",
+    "editor",
+    "wysiwyg",
+    "html",
+    "richtext",
+    "text",
+    "javascript"
+  ],
+  "license": "(GPL-2.0 OR LGPL-2.1 OR MPL-1.1)",
+  "main": "ckeditor.js",
+  "maintainers": [
+    {
+      "name": "cksource",
+      "email": "npm@cksource.com"
+    }
+  ],
+  "name": "ckeditor4",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ckeditor/ckeditor4-releases.git"
+  },
+  "version": "4.13.1"
+}

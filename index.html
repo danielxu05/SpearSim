@@ -1,0 +1,151 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+    <link href="phishing_parta/Style.css" rel="stylesheet"></link>
+
+</head>
+<body>
+<script type="text/javascript">
+    function validate()
+    {
+        if( document.myForm.age.value == false  )
+        {
+            alert( "Please answer the age question to proceed" );
+            return false;
+        }
+       if( document.myForm.Understand.value == false )
+       {
+           alert( "Please answer all of the questions to proceed" );
+           return false;
+       }
+
+       if( document.myForm.Participate.value == false  )
+       {
+           alert( "Please answer all of the questions to proceed" );
+           return false;
+       }
+
+       if( document.myForm.staff.value == false  )
+       {
+           alert( "Please answer all of the questions to proceed" );
+           return false;
+       }
+
+        var txt = "";
+        var txt1 = "";
+        var txt2 = "";
+        var i;
+
+        for (i = 0; i < document.myForm.age.length; i++) {
+            if (document.myForm.age[i].checked) {
+                txt = document.myForm.age[i].value;
+            }
+        }
+
+        for (i = 0; i < document.myForm.Understand.length; i++) {
+            if (document.myForm.Understand[i].checked) {
+                txt1 = document.myForm.Understand[i].value;
+            }
+        }
+
+        for (i = 0; i < document.myForm.Participate.length; i++) {
+            if (document.myForm.Participate[i].checked) {
+                txt2 = document.myForm.Participate[i].value;
+            }
+        }
+        for (i = 0; i < document.myForm.staff.length; i++) {
+            if (document.myForm.staff[i].checked) {
+                txt3 = document.myForm.staff[i].value;
+            }
+        }
+        if ( txt === "lt18" || txt1 == "N"|| txt2 == "N" ||  txt3=="N"){
+         document.getElementById('start').style.display = "none";
+         document.getElementById('catnum12').innerHTML = "<br><br>We are sorry to hear that you don't wish/qualify to participate in our experiment. \nThank You for your interest! You may close this window now.";
+         return false;
+        }
+        else{
+            return( true );
+        }
+    }
+</script>
+<?php
+session_start();
+$_SESSION["starttimeval"]= time();
+echo($_GET['MTId']);
+?>
+<style>
+    p{line-height: 1;margin:0.5;}
+</style>
+<label id="catnum12" style="font-size:x-large; color:black; font-style:italic;" ></label>
+<div id="start" style="width:90%; margin-left:auto; margin-right:auto; ">
+<center><h1><strong>Welcome to Email Decision Making Study</strong></h1>
+    <h2> Please read the following consent form before proceeding</h2>
+</center>
+
+<p>We are asking you to be in a research study. This form gives you information to help you decide whether or not to be in the study. Being in the study is voluntary.</p>
+<p>Please read this carefully. You may ask any questions about the study. Then you can decide whether or not you want to be in the study.</p>
+<p><strong>PURPOSE OF THE STUDY</strong></p>
+<p>This task is part of a research study conducted by Dr. Prashanth Rajivan at University of Washington. The purpose of the research is to explore the various factors that affect email decision making.</p>
+<p><strong>STUDY PROCEDURES</strong></p>
+<p>Throughout the experiment, you will be making a series of decisions and writing involving one of three possible situations: 1) classification decisions, 2) choice decisions, and 3) decisions in competitive 2-person and more than two person games. Regardless of the particular situation you are presented with, your decisions will be separated in a number of trials and you will be provided with feedback that reflects the accuracy and effect of your decisions, according to the instructions provided in this experiment. The feedback will be shown to you in a number of points which are accumulated throughout the trials, and at the end of the experiment this will be converted into the total amount you earned. The accumulated number of points will represent the rewards you obtain for making accurate decisions.</p>
+<p><strong>PARTICIPANT REQUIREMENTS</strong></p>
+<p>Participation in this study is limited to individuals age 18 and older, currently residing in the United States, with at least basic computer proficiency, and the ability to read and understand English.</p>
+<p><strong>RISKS, STRESS, OR DISCOMFORT</strong></p>
+<p>The risks, stress and discomfort associated with participation in this study are no greater than those ordinarily encountered in daily life or during other online activities.</p>
+<p><strong>BENEFITS OF THE STUDY</strong></p>
+<p>There may be no personal benefit from your participation in the study, but the knowledge received may be of value to humanity.</p>
+<p><strong>COMPENSATION &amp; COSTS</strong></p>
+<p>You will be compensated for completing the study at the rate initially advertised. You will only be eligible for compensation if you have completed the study in full and supplied the appropriate confirmation code. There is no partial payment if you do not complete the study. You will not be penalized if you choose to withdraw from the study without completing it, but you will not be compensated either.</p>
+<p>There will be no cost to you if you participate in this study.</p>
+<p><strong>CONFIDENTIALITY OF RESEARCH INFORMATION</strong></p>
+<p>The data captured for the research does not include any personally identifiable information about you.</p>
+<p><strong>USE OF INFORMATION</strong></p>
+<p>By participating in this research, you understand and agree that University of Washington may be required to disclose your consent form, data and other personally identifiable information as required by law, regulation, subpoena or court order. Otherwise, your confidentiality will be maintained in the following manner:</p>
+<p>Your data and consent form will be kept separate. Your consent form will be stored in a locked location on University of Washington property and will not be disclosed to third parties. By participating, you understand and agree that the data and information gathered during this study may be used by University of Washington and published and/or disclosed by University of Washington to others outside of University of Washington.</p>
+<p><strong>VOLUNTARY PARTICIPATION</strong></p>
+<p>You may refuse to participate, and you are free to withdraw from this study at any time without penalty or loss of benefits to which you are otherwise entitled.</p>
+<p><strong>RESEARCH-RELATED INJURY</strong></p>
+<p>If you think you have been harmed from being in this research, contact:</p>
+<p>Dr. Prashanth Rajivan</p>
+<p>Department of Industrial and Systems Engineering</p>
+<p>Seattle 98195 WA</p>
+<p>Phone: 206-543-8956</p>
+<p>Email: <a href="mailto:brics@uw.edu">brics@uw.edu</a></p>
+<p><strong><u>Subject&rsquo;s statement</u></strong></p>
+<p>This study has been explained to me. I volunteer to take part in this research. I have had a chance to ask questions. If I have questions later about the research, or if I have been harmed by participating in this study, I can contact one of the researchers listed on the first page of this consent form. If I have questions about my rights as a research subject, I can call the Human Subjects Division at (206) 543-0098 or call collect at (206) 221-5940.</p>
+
+
+</p>
+    <form name="myForm" method="get" action="http://54.213.253.53:3000" onsubmit="return(validate());">
+        <h3>I am age 18 or older</h3>
+        <input type="radio" name="age" value="mt18"/> Yes<br/>
+        <input type="radio" name="age" value="lt18"/> No<br/>
+        <hr>
+
+        <h3>I have read and understand the information above</h3>
+        <input type="radio" name="Understand" value="Y"/> Yes<br/>
+        <input type="radio" name="Understand" value="N"/> No<br/>
+        <hr>
+
+        <h3>I want to participate in this research and continue with the [survey, game, activity].</h3>
+        <input type="radio" name="Participate" value="Y"/> Yes<br/>
+        <input type="radio" name="Participate" value="N"/> No<br/>
+        <hr>
+
+        <h3>Are you a faculty, staff or student in University of Washington or 
+            Carnegie Mellon University?</h3>
+        <input type="radio" name="staff" value="Y"/> Yes<br/>
+        <input type="radio" name="staff" value="N"/> No<br/>
+        <hr>
+        <br/><br/>
+        <div id = 'wrapper' name = 'wrapper'>
+
+            <input type="submit" name="submit" class="btn-style" value="Submit" />
+
+        </div>
+        
+    </form>
+</div>
+</body>
+</html>

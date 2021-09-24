@@ -1,23 +1,52 @@
+<?php
+session_start();
+include '../class/class.rater.php';
+$rater = new Rater(md5($_GET['MTId']));
+$rater->setWaittime($_GET['waittime']);
+$rater->setStarttime(time());
+$_SESSION['Rater']=$rater;
+$_SESSION['EmailAdd'] = $_GET['MTId'];
+$_SESSION['CSpear']=0;
+$rater->insertDB();
+?>
+
 <!DOCTYPE HTML>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="Style.css">
+    <link rel="stylesheet" type="text/css" href="./Style.css">
     <script src="jquery-3.1.0.min.js"></script>
+
 </head>
-<script type="text/javascript">
-    $(document).ready(function(){
-        $(window).bind("beforeunload", function(){ return(false); });
-    });
-</script>
+<title>
+    Demographic
+</title>
+
 <body>
 <script type="text/javascript">
+
+var pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/); //unacceptable chars
+
     function validate()
     {
-        var txt = "";
-        if( document.myForm.age.value == false  )
+        if(document.myForm.FN.value == false){
+            alert('Please provide your First Name');
+            return false;
+        }
+
+        if(document.myForm.LN.value == false){
+            alert('Please provide your Last Name');
+            return false;
+        }
+
+        if( document.myForm.Age.value == false)
         {
             alert( "Please provide your age" );
             return false;
+        }else{
+            if (isNaN(document.myForm.Age.value)){
+                alert("Please provide your age in a proper number");
+                return false;
+            }
         }
 
         if( document.myForm.Gender.value == false  )
@@ -26,118 +55,82 @@
             return false;
         }
 
-        if( document.myForm.English.value == false )
+        if( document.myForm.Degree.value == false )
         {
-            alert( "Please answer the on english nativity" );
+            alert( "Please answer the question on Degree" );
             return false;
         }
 
-        var val = document.myForm.Native.value;
-
-        if(val==null || val.trim()==""){
-            alert( "Please provide your native language " );
-            return false;
-        }
-        if( document.myForm.Prof.value == false )
-        {
-            alert( "Please rate your english writing proficiency" );
-            return false;
-        }
-        for (i = 0; i < document.myForm.age.length; i++) {
-            if (document.myForm.age[i].checked) {
-                txt = document.myForm.age[i].value;
-            }
-        }
-        if ( txt === "lt18"){ //exclusion criteria
-            $(window).unbind('beforeunload');
-            document.getElementById('start').style.display = "none";
-            document.getElementById('catnum12').innerHTML = "We are sorry to hear that you don't qualify to participate in our experiment (Underage). \nThank You for your interest";
-            return false;
-        }
-        $(window).unbind('beforeunload');
+        if (pattern.test(document.myForm.FN.value) || pattern.test(document.myForm.LN.value) || pattern.test(document.myForm.Age.value)) {
+            alert("Please only use standard letter");
+        return false;
+        }   
     }
+
+var PageTitleNotification = {
+    Vars:{
+        OriginalTitle: document.title,
+        Interval: null
+    },    
+    On: function(notification, intervalSpeed){
+        var _this = this;
+        _this.Vars.Interval = setInterval(function(){
+                document.title = (_this.Vars.OriginalTitle == document.title)
+                                    ? notification
+                                    : _this.Vars.OriginalTitle;
+        }, (intervalSpeed) ? intervalSpeed : 1500);
+    },
+    Off: function(){
+        clearInterval(this.Vars.Interval);
+        document.title = this.Vars.OriginalTitle;   
+    }
+}
+PageTitleNotification.On("Experinment Start!");
+$(document).click(function(e) {
+    PageTitleNotification.Off();
+});
 </script>
-
-<?php
-session_start();
-$_SESSION["workerId"] = $_GET["MTId"];
-
-$line = "";
-$file = fopen("Config.txt","r");
-$temp = 0;
-while(! feof($file))
-{
-    if($temp==0){
-        $line = fgets($file);
-    }
-    $line = $line."+".fgets($file);
-    $temp = $temp + 1;
-}
-fclose($file);
-//echo $line;
-$pieces = explode("+",$line);
-$servername = "localhost";
-$username = trim( $pieces[0]);
-$password = trim($pieces[1]);
-$dbname = trim($pieces[2]);
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-$sql = "SELECT UserID FROM Participant Where UserId='".$_SESSION["workerId"]."'";
-$result1 = $conn->query($sql);
-if ($result1->num_rows > 0) {
-    #echo "We have Results";
-    header('Location: Error.html');
-}
-$conn->close();
-?>
 <label id="catnum12" style="font-size:x-large; color:black; font-style:italic;" ></label>
-<div id="start">
-<form name="myForm" method="get" onsubmit="return validate();" action=<?php echo $result;?>>
+<div id= 'wrapperC'>
+<form name="myForm" method="post" onsubmit="return validate();" action="Intro.php">
+<h1>Please answer the following questions</h1>
+
+<h3>What is your First Name?</h3>
+    <input type="text" id="FN" name="FN" cols="50" style="border-style: solid; border-width: medium" value = ""><br>
+    <hr>
+
+    <h3>What is your Last Name?</h3>
+    <input type="text" id="LN" name="LN" cols="50" style="border-style: solid; border-width: medium" value = ""><br>
+    <hr>
+
     <h3>What is your age?</h3>
-    <input type="radio" name="age" value="lt18"/> Less than 18<br/>
-    <input type="radio" name="age" value="18-25"/> 18-25<br/>
-    <input type="radio" name="age" value="26-35"/> 26-35<br/>
-    <input type="radio" name="age" value="36-45"/> 36-45<br/>
-    <input type="radio" name="age" value="46-55"/> 46-55<br/>
-    <input type="radio" name="age" value="56-65"/> 56-65<br/>
-    <input type="radio" name="age" value="66-75"/> 66-75<br/>
-    <input type="radio" name="age" value="75+"/> 76 and above<br/>
+    
+    <input type="text" id="Age" name="Age" cols="50" style="border-style: solid; border-width: medium" maxlength="2" value = ""><br>
     <hr>
 
     <h3>Which of the following describes how you think of yourself?</h3>
-    <input type="radio" name="Gender" value="F"/> Female<br/>
-    <input type="radio" name="Gender" value="M"/> Male<br/>
-    <input type="radio" name="Gender" value="I"/> Other<br/>
-    <input type="radio" name="Gender" value="N"/> Prefer not to say<br/>
+    <label style="font-size: medium;"><input type="radio" name="Gender" value="F"/> Female<br/></label>
+    <label style="font-size: medium;"><input type="radio" name="Gender" value="M"/> Male<br/></label>
+    <label style="font-size: medium;"><input type="radio" name="Gender" value="B"/> Non-binary<br/></label>
+    <label style="font-size: medium;"><input type="radio" name="Gender" value="O"/> Other<br/></label>
+    <label style="font-size: medium;"><input type="radio" name="Gender" value="N"/> Prefer not to say<br/></label>
     <hr>
 
-    <h3>Are you a native English speaker?</h3>
-    <input type="radio" name="English" value=1 /> Yes<br/>
-    <input type="radio" name="English" value=2 /> No<br/>
-    <hr>
+    <h3>What is your education Background</h3>
 
-    <h3>If you answered <i>no</i> to the previous question, Please provide your native language (mother tongue). If you answered <i>yes</i>, please write "English"</h3>
-    <input type="text" name="Native" id="Native" cols="50" style="border-style: solid; border-width: medium" value=""><br>
-    <hr>
+    <label style="font-size: medium;"><input type="radio" name="Degree" value="H"/> High School<br/></label>
+    <label style="font-size: medium;"><input type="radio" name="Degree" value="B"/> Bachlors' degree<br/></label>
+    <label style="font-size: medium;"><input type="radio" name="Degree" value="M"/> Master's degree<br/></label>
+    <label style="font-size: medium;"><input type="radio" name="Degree" value="P"/> Ph.D. and higher degree<br/></label>
+    <label style="font-size: medium;"><input type="radio" name="Degree" value="O"/> Other<br/></label>
 
-    <h3>Please rate your English writing proficiency using the below scale</h3>
-    <input type="radio" name="Prof" value=6 /><b>Very Advanced:</b> I can write with perfect grammar, and always covey my thoughts clearly <br/>
-    <input type="radio" name="Prof" value=5 /><b>Advanced:</b> I can write very well using appropriate grammar but may still make mistakes and fail to convey my thoughts occasionally.	<br/>
-    <input type="radio" name="Prof" value=4 /><b>Intermediate:</b> I can write reasonably well and can use basic tenses but have problems with more complex grammar and vocabulary.	<br/>
-    <input type="radio" name="Prof" value=3 /><b>Low Intermediate:</b> I can make simple sentences and can convey the main points of a conversation but need much more vocabulary.	<br/>
-    <input type="radio" name="Prof" value=2 /><b>Elementary:</b> I can write simple and short sentences only <br/>
-    <input type="radio" name="Prof" value=1 /><b>Beginner:</b> I can write a few words and partial sentences in English.	<br/>
-    <!-- <input type="radio" name="Prof" value=1 />I cannot write anything in English <br/> -->
 
-    <br/><br/>
-
-    <input type="submit" name="submit" class="btn-style" value="Submit">
-    <input type="hidden" name="timeval" id="timeval" value=0 />
+    <br>
+    <div id = "wrapper">
+        <input type="submit" name="submit" class="btn-style" value="Submit">
+    </div>
 </form>
 </div>
 </body>
 </html>
+

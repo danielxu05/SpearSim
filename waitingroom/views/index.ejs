@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8" />
+    <link href="http://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="style.css" >
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <title>Waiting Room</title>
+  </head>
+  <style>
+      p{line-height: 1;}     
+  </style>
+  <body>
+    <header>
+      <h1>Welcome to Email Decision Making Study</h1>
+    </header>
+    <br>
+    <section>
+      <div id="change_username" size="15">
+        <p style="font-size:30px">Please provide your School Email Address</p>
+
+          <input id="username" type="text" style="width: 300px"/>
+          <br><br>
+          <button id="send_username" type="button" style="border : solid 1px #000000;
+          border-radius : 3px;
+          moz-border-radius : 3px;
+          -webkit-box-shadow : 0px 0px 2px rgba(0,0,0,1.0);
+          -moz-box-shadow : 0px 0px 2px rgba(0,0,0,1.0);
+          box-shadow : 0px 0px 2px rgba(0,0,0,1.0);
+          font-size : 20px;
+          color : #ffffff;
+          padding : 1px 17px;
+          background : #5f6166;
+          background : -webkit-gradient(linear, left top, left bottom, color-stop(0%,#5f6166), color-stop(100%,#00060a));
+          background : -moz-linear-gradient(top, #5f6166 0%, #00060a 100%);
+          background : -webkit-linear-gradient(top, #5f6166 0%, #00060a 100%);
+          background : -o-linear-gradient(top, #5f6166 0%, #00060a 100%);
+          background : -ms-linear-gradient(top, #5f6166 0%, #00060a 100%);
+          background : linear-gradient(top, #5f6166 0%, #00060a 100%);
+          filter : progid:DXImageTransform.Microsoft.gradient( startColorstr='#5f6166', endColorstr='#00060a',GradientType=0 );">Enter </button>
+      </div>
+    </section>
+    
+    <section>
+
+      <div id = "waitsection">
+        <p style="font-size:25px">Please Wait</p>
+        <img src="processing.gif" width="200"  heigth="200">
+
+        <p style="font-size:25px">This is a group experiment. Please wait for other participants to join your group.</p>
+        <p style="font-size:25px">Remaining waiting time: </p>
+        <div id = "demo" style="font-size:25px"></div>
+      </div>
+    </section>
+
+
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="chat.js"></script>
+  </body>
+</html>

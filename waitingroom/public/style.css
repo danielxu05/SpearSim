@@ -1,0 +1,63 @@
+@mixin vertical-align {
+    position: relative;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+  
+  * {
+      box-sizing: border-box;
+  }
+  
+  html {
+      height: 100%;
+  }
+  
+  body {
+      margin: 0px;
+      height: 100%;
+  }
+  
+  header {
+      text-align: center;
+  }
+  
+  h1 {
+      margin: 0px;
+  }
+  
+  div#change_username,#waitsection {
+      text-align: center;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      height: 3%;
+
+}
+  .vertical-align {
+      position: relative;
+      top: 50%;
+      -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+  }
+  
+  .center {
+    text-align: center;  }
+
+  input#username {
+  }
+  
+  input#message {
+      display: inline-block;
+      width: 88%;
+      height: 70%;
+      font-size: 2vh;
+  }
+  
+  button#send_message {
+      display: inline-block;
+      height: 70%;
+      width: 10%;
+  }

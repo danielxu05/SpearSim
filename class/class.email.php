@@ -11,10 +11,6 @@ class Email
 
   	private $Cost;
 
-  	private $Gain;
-
-  	private $Edit;
-
   	private $Templete;
 
   	private $Goal; 
@@ -35,39 +31,53 @@ class Email
 
   	private $AttackStartTS; #AttackStartTimeStamp
 
-  	private $AttackFinishTS; #AttackFinishTimeStamp
+	private $AttackFinishTS; #AttackFinishTimeStamp
+	  
+	private $LoadTS;
 
-  	private $Deadline;
+	private $ProfileTS;
 
-  	private $Positive;
+	private $SubmitTS;
 
-  	private $Negative;
+  	private $Offer;
 
-  	private $Authority;
+  	private $Followup;
 
-  	private $Friend;
-
-  	private $Interest;
+  	private $Threaten;
 
   	private $Failure;
 
-  	private $Deal;
+  	private $Authority;
 
-  	private $IllMaterial;
+  	private $Peers;
 
-  	private $IllGains;
+  	private $Time;
 
-  	private $Oppotunity;
+  	private $Pretend;
 
-  	private $RHelp;
+  	private $Interest;
 
-  	private $OHelp;
-
-  	private $Other;
-
+	private $Other;
+	  
   	private $Self_eval;
 
-  	private $TargetID;
+	private $Tone;
+
+	private $Impersonation;
+
+	private $Personal_;
+
+	private $Professional_;
+
+	private $Family_;
+
+	private $Interest_;
+
+	private $User_info;
+
+	private $TargetID;
+	
+	private $NumEdit;
 
 
   	function __construct($Attacker,$Trial,$Status)
@@ -77,6 +87,26 @@ class Email
   		$this->Status = $Status;
   	}
 
+	  public function setProfileTS($ProfileTS){
+		  $this->ProfileTS = $ProfileTS;
+	  }
+	  public function setLoadTS($LoadTS){
+		$this->LoadTS = $LoadTS;
+	}
+
+
+	public function setSubmitTS($SubmitTS){
+		$this->SubmitTS = $SubmitTS;
+	}
+
+	public function setNumEdit($NumEdit){
+		$this->NumEdit = $NumEdit;
+	}
+
+
+	public function setUser_info($User_info){
+		$this->User_info=$User_info;
+	}
   	public function getAttacker(){
 		return $this->Attacker;
 	}
@@ -97,21 +127,6 @@ class Email
 		$this->Cost = $Cost;
 	}
 
-	public function getGain(){
-		return $this->Gain;
-	}
-
-	public function setGain($Gain){
-		$this->Gain = $Gain;
-	}
-
-	public function getEdit(){
-		return $this->Edit;
-	}
-
-	public function setEdit($Edit){
-		$this->Edit = $Edit;
-	}
 
 	public function getTemplete(){
 		return $this->Templete;
@@ -200,53 +215,28 @@ class Email
 	public function setAttackFinishTS($AttackFinishTS){
 		$this->AttackFinishTS = $AttackFinishTS;
 	}
-
-	public function getDeadline(){
-		return $this->Deadline;
+	public function getOffer(){
+		return $this->Offer;
 	}
 
-	public function setDeadline($Deadline){
-		$this->Deadline = $Deadline;
+	public function setOffer($Offer){
+		$this->Offer = $Offer;
 	}
 
-	public function getPositive(){
-		return $this->Positive;
+	public function getFollowup(){
+		return $this->Followup;
 	}
 
-	public function setPositive($Positive){
-		$this->Positive = $Positive;
+	public function setFollowup($Followup){
+		$this->Followup = $Followup;
 	}
 
-	public function getNegative(){
-		return $this->Negative;
+	public function getThreaten(){
+		return $this->Threaten;
 	}
 
-	public function setNegative($Negative){
-		$this->Negative = $Negative;
-	}
-
-	public function getAuthority(){
-		return $this->Authority;
-	}
-
-	public function setAuthority($Authority){
-		$this->Authority = $Authority;
-	}
-
-	public function getFriend(){
-		return $this->Friend;
-	}
-
-	public function setFriend($Friend){
-		$this->Friend = $Friend;
-	}
-
-	public function getInterest(){
-		return $this->Interest;
-	}
-
-	public function setInterest($Interest){
-		$this->Interest = $Interest;
+	public function setThreaten($Threaten){
+		$this->Threaten = $Threaten;
 	}
 
 	public function getFailure(){
@@ -257,52 +247,44 @@ class Email
 		$this->Failure = $Failure;
 	}
 
-	public function getDeal(){
-		return $this->Deal;
+	public function getAuthority(){
+		return $this->Authority;
 	}
 
-	public function setDeal($Deal){
-		$this->Deal = $Deal;
+	public function setAuthority($Authority){
+		$this->Authority = $Authority;
 	}
 
-	public function getIllGains(){
-		return $this->IllGains;
+	public function getPeers(){
+		return $this->Peers;
 	}
 
-	public function setIllGains($IllGains){
-		$this->IllGains = $IllGains;
+	public function setPeers($Peers){
+		$this->Peers = $Peers;
 	}
 
-	public function getIllMaterial(){
-		return $this->IllMaterial;
+	public function getTime(){
+		return $this->Time;
 	}
 
-	public function setIllMaterial($IllMaterial){
-		$this->IllMaterial = $IllMaterial;
+	public function setTime($Time){
+		$this->Time = $Time;
 	}
 
-	public function getOppotunity(){
-		return $this->Oppotunity;
+	public function getPretend(){
+		return $this->Pretend;
 	}
 
-	public function setOppotunity($Oppotunity){
-		$this->Oppotunity = $Oppotunity;
+	public function setPretend($Pretend){
+		$this->Pretend = $Pretend;
 	}
 
-	public function getRHelp(){
-		return $this->RHelp;
+	public function getInterest(){
+		return $this->Interest;
 	}
 
-	public function setRHelp($RHelp){
-		$this->RHelp = $RHelp;
-	}
-
-	public function getOHelp(){
-		return $this->OHelp;
-	}
-
-	public function setOHelp($OHelp){
-		$this->OHelp = $OHelp;
+	public function setInterest($Interest){
+		$this->Interest = $Interest;
 	}
 
 	public function getOther(){
@@ -321,12 +303,60 @@ class Email
 		$this->Self_eval = $Self_eval;
 	}
 
+	public function getTone(){
+		return $this->Tone;
+	}
+
+	public function setTone($Tone){
+		$this->Tone = $Tone;
+	}
+
 	public function getTargetID(){
 		return $this->TargetID;
 	}
 
 	public function setTargetID($TargetID){
 		$this->TargetID = $TargetID;
+	}
+
+	public function getImpersonation(){
+		return $this->Impersonation;
+	}
+
+	public function setImpersonation($Impersonation){
+		$this->Impersonation = $Impersonation;
+	}
+
+	public function getPersonal_(){
+		return $this->Personal_;
+	}
+
+	public function setPersonal_($Personal_){
+		$this->Personal_ = $Personal_;
+	}
+
+	public function getProfessional_(){
+		return $this->Professional_;
+	}
+
+	public function setProfessional_($Professional_){
+		$this->Professional_ = $Professional_;
+	}
+
+	public function getFamily_(){
+		return $this->Family_;
+	}
+
+	public function setFamily_($Family_){
+		$this->Family_ = $Family_;
+	}
+
+	public function getInterest_(){
+		return $this->Interest_;
+	}
+
+	public function setInterest_($Interest_){
+		$this->Interest_ = $Interest_;
 	}
 
 	public function checkAttackersql(){
@@ -343,7 +373,7 @@ class Email
   	public function getTrialCont($Trial){
   		$db = Database::getInstance();
 	    $conn = $db->getConnection(); 
-	    $sql = "SELECT * FROM Spear_Phishing WHERE UserID = '".$this->Attacker->getUserID()."' AND Trial ='". $Trial ."';";
+	    $sql = "SELECT Subject,EmailCont FROM Spear_Phishing WHERE UserID = '".$this->Attacker->getUserID()."' AND Trial ='". $Trial ."';";
 	    $result = $conn->query($sql);
 	    #$result = 1;
 	    #print_r($conn);
@@ -358,17 +388,18 @@ class Email
 	      $sql = $this->genSQLUdt();
 	    }else{
 	      $sql = $this->genSQLIN();
-	    }
-	    $conn->query($sql);
+		}
+		if(!$conn->query($sql)){
+			printf("Connection failed: %s\n", $conn->error, $SQL);
+			exit();
+		}
   	}
 
   	private function genSQLIN(){
 		$array = get_object_vars($this);
-		var_dump($array);
 		unset($array['Attacker']);#to eliminate element from array
 		unset($array['Role']);#to eliminate element from array
 		$array['UserID'] = $this->Attacker->getUserID();
-		#var_dump($array);
 		$part1 = "INSERT INTO `Spear_Phishing`";
 		$keys = "";
 		$values = "";
@@ -377,14 +408,11 @@ class Email
 			$values = $values."'".$value."',";
 		}
 		$sql = $part1.'('.substr($keys, 0, -1).') VALUES ('.substr($values, 0,-1).');';
-		echo $sql;
 		return $sql;
   	}
 
 	private function genSQLUdt(){
 		$array = get_object_vars($this);
-		var_dump($array);
-
 		unset($array['Role']);#to eliminate element from array
 		unset($array['Attacker']);#to eliminate element from array
 		$part1 = "UPDATE `Spear_Phishing` SET";
@@ -393,6 +421,7 @@ class Email
 		  $query = $query." ".$key." = '".$value."',";
 		}
 		$sql = $part1.' '.substr($query, 0,-1)." WHERE UserID = '".$this->Attacker->getUserID()."'";
+
 		return $sql;
 	}
 }

@@ -1,157 +1,149 @@
 <?php session_start(); ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
+<title>
+Simulation
+</title>
 <head>
-    <title></title>
-    <link rel="stylesheet" type="text/css" href="Style.css">
-    <script src="jquery-3.1.0.min.js"></script>
-    <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
-    <meta charset="UTF-8">
-    <meta name="description" content="Attacker Experiment">
-    <meta name="author" content="Rajivan">
+<link rel="stylesheet" type="text/css" href="Style.css">
+<script src="jquery-3.1.0.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.css">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src ="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.js"></script>
+
+<script src="../ckeditor4/ckeditor.js"></script>
+
+<meta charset="UTF-8">
+<meta name="description" content="Attacker Experiment">
 </head>
 
 <?php 
-
 ini_set("memory_limit","512M");
 $StartTime = time();
 include '../class/class.email.php';
 $attacker = unserialize (serialize ($_SESSION['User']));
-var_dump($attacker);
-$attacker->nextTrial();
-if($attacker->getTrial()==1) {
-    echo '<script type="text/javascript"> alert("Reminder:You have exceeded 45 minutes in the experiment"); </script>';
-}
+
 //Setup the DB Connection Info
 $db = Database::getInstance();
 $conn = $db->getConnection(); 
 #$Attacker,$Templete,$Practice_I,$Status,$AttackStartTS
 echo "<br><br>";
 
-echo "Trial number: ".$attacker->getTrial();
 
-
-$Current_Capital = 2000;
-$val = ($Current_Capital/4000) * 100;
+$Current_Capital = $attacker->getEarn();
+$val = ($Current_Capital/10000) * 100;
 $global_percent = $val;
-$EmailText = "preset";
-$SubjectText ="preset";
-$TempleteID = $_POST['TempleteID'];
-$TempleteID = 3; 
-$goallist = array('Practice Goal','Your first mission is to get the username and password to the work account of each target. You will get only one attempt with each target. You will be rewarded handsomely. ','Your second mission is to get the persuade your targets to download an attachment. You will get only one attempt with each target. You will be rewarded handsomely.','Your third goals is to ' );
+$TempleteID = array(11,6,12); 
+
+$goallist = array('Your mission is to get the username and password for bank account of the target.','Your mission is to persuade your target to download an attachment.','Your mission is to get the username and password to the work account of your target.' );
 #$templeID
 $targetlist = array($attacker->getTargetID1(), $attacker->getTargetID2(),$attacker->getTargetID3());
-
-var_dump($_SESSION['goalorder']);
-var_dump($_SESSION['targetorder']);
 $Email = new Email($attacker,$attacker->getTrial(),0);
-
 #view for the trial
-if(($attacker->getTrial()-2)%3 ==1 or $attacker->getTrial()==1){
-    #Templete ID is depend on the target 
-    $sql = "SELECT `Email`, `Subject` FROM `Email` WHERE id = ".$TempleteID;
-    $result = $conn->query($sql)->fetch_assoc();
-    #each start of the trial update 
-    $array = $_SESSION['targetorder'];
+
+if($attacker->getTrial()>10){
+    $attacker->abortUsers(1);#abort to the survey or end. 
+    exit();
+}
+
+#template and previous edit
+if(($attacker->getTrial()-1)%3 ==1 or $attacker->getTrial()==1){
+    $array = array(0,1,2);  
     shuffle($array);
-    $_SESSION['targetorder'] = $array;
+    $_SESSION['targetorder'] =$array;
+    #Templete ID is depend on the target 
+    if($attacker->getTrial()==1){
+        $templeteID = 3;
+    }else{
+        $goalnum = $_SESSION['goalorder'][floor(($attacker->getTrial()-2)/3)];
+        $templeteID = $TempleteID[$goalnum];
+    }
+    $sql = "SELECT `Email`, `Subject` FROM `Email` WHERE id = ".$templeteID;
+    $result = $conn->query($sql)->fetch_assoc();
+    
+    #each start of the trial update 
 }else{
     $result = $Email->getTrialCont($attacker->getTrial()-1)->fetch_assoc();
     $result['Email'] = $result['EmailCont'];
 }
-$goaltext = $goallist[$attacker->getTrial()/3];
 
-if($attacker->getTrial()>=0 and $attacker->getTrial()<=2){
-    echo "practice Trial";
+
+if($attacker->getTrial()==1){
     $Email->setPractice_I(1);
     $Email->setStatus(1);
-}else{
-    $subTrial = ($attacker->getTrial()-2)%3;
-    echo "value of SubTrial ".$subTrial;
-    echo "<br>";
-    var_dump($_SESSION['targetorder']);
-    echo "Target ".$targetlist[$subTrial];
-    $Email->setTargetID($targetlist[$subTrial]);
+    $info = $attacker->getTargetprofile(0);
+    $goalnum = 5;
+    $goaltext = 'Your mission is to get the username and password for Amazon account of the target.';
+}elseif($attacker->getTrial()>=2 and $attacker->getTrial()<11){
+    $goalnum = $_SESSION['goalorder'][floor(($attacker->getTrial()-2)/3)];
+    $goaltext = $goallist[$goalnum];
+    $subTrial = ($attacker->getTrial()-1)%3;
+//    echo "Target ".$targetlist[$subTrial];
+    $Email->setTargetID($targetlist[$_SESSION['targetorder'][$subTrial]]);
     $Email->setPractice_I(0);
-    if($attacker->getTrial()>2 and $attacker->getTrial()<=5){
-        echo "Experiment1";
-    }elseif($attacker->getTrial()>5 and $attacker->getTrial()<=8){
-        echo "Experiment2";
-    }elseif($attacker->getTrial()>8 and $attacker->getTrial()<=11){
-        echo "Experiment3";
-    }else{
-        echo "<script>window.location = 'ThankYou.php';</script>";
-    }
+ //   var_dump($_SESSION['targetorder']);
+    $info = $attacker->getTargetprofile($_SESSION['targetorder'][$subTrial]+1);
 }
 
-
-
+$profile_type = $attacker->getProfileType();
+//$profile_type=1;######remember to remove;
+$infolist = array('Personal','Professional','Family','Interest');
 
 $EmailText = $result['Email'];
 $SubjectText = $result['Subject'];
 $_SESSION['User']=$attacker;
 $_SESSION['Email'] = $Email;
+$_SESSION['Templete']= $templeteID;
+$_SESSION['Goal']= $goalnum;
+$selfstatus = $attacker->updateTime();
+if ($selfstatus){
+    $attacker->checkActive();
+}
 ?>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <!-- Display the countdown timer in an element -->
 <script>
-// Set the date we're counting down to
-var minutes = 10
-var countDownDate = new Date().getTime()+minutes*800;
-// Update the count down every 1 second
-var x = setInterval(function() {
-  // Get today's date and time
-  var now = new Date().getTime();
-  // Find the distance between now and the count down date
-  var distance = countDownDate - now;
-  // Time calculations for days, hours, minutes and seconds
-  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-  // Display the result in the element with id="demo"
-  document.getElementById("demo").innerHTML = days + "d " + hours + "h "
-  + minutes + "m " + seconds + "s ";
-  // If the count down is finished, write some text
-  if (distance < 0) {
-    clearInterval(x);
-    document.getElementById("demo").innerHTML = "You Finished the Edit, please select the strategies you used and go to the next trial. ";
-    Q1_click();
-  }
-}, 1000);
-</script>
+    var slider_flag=1;
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script>
-   
 
+function count_time(){
+    var trial = <?php echo($attacker->getTrial());?>;
+    if (trial==1){
+        var minutes = 5;
+    }else{
+        var minutes = 7;
+    }
+    var countDownDate = new Date().getTime()+minutes*60000;
+    // Update the count down every 1 second
+    var x = setInterval(function() {
+    // Get today's date and time
+    var now = new Date().getTime();
+    // Find the distance between now and the count down date
+    var distance = countDownDate - now;
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    document.getElementById("demo").innerHTML = 'Time remaining:'+minutes + "m " + seconds + "s ";
+    if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("demo").innerHTML = "Time to edit is over! Please continue to answer the questions below.";
+        Q2_click();
+    }
+    }, 1000);
+}
     var editor;
     // The instanceReady event is fired when an instance of CKEditor has finished
     // its initialization.
     $(document).ready(function(){
-            $(window).bind("beforeunload", function(){ return(false); });
             var d = new Date();
-            document.myForm.starttime.value = d.getTime();
+            document.myForm.loadtime.value = d.getTime();
        });
-    window.onbeforeunload = function() {
-        alert( "Dude, are you sure you want to leave? Think of the kittens!");
-    }
     
-    CKEDITOR.on( 'instanceReady', function ( ev ) {
-        editor = ev.editor;
-
-        // Show this "on" button.
-        document.getElementById( 'readOnlyOn' ).style.display = '';
-
-        // Event fired when the readOnly property changes.
-        editor.on( 'readOnly', function () {
-            document.getElementById( 'readOnlyOn' ).style.display = this.readOnly ? 'none' : '';
-            document.getElementById( 'readOnlyOff' ).style.display = this.readOnly ? '' : 'none';
-        } );
-    } );
 
     CKEDITOR.on('instanceCreated',function(ev){
-        console.log('created');
         var arr = [];
         var start = null;
         ev.editor.on('contentDom', function(e) {
@@ -168,149 +160,336 @@ var x = setInterval(function() {
                 start = null;//start the next  timing tracking
                 const arrAvg = arr.reduce((a,b) => a + b, 0) / arr.length;
                 const len = arr.length;
-                console.log(['time elapsed:', timeElapsed, 'ms'].join(' '));
-                console.log(['average ',arrAvg,'ms'].join(' '));
-                console.log(arr.length);
                 document.myForm.keystroke.value = Math.floor(arrAvg * 10000) / 10000 ;
                 document.myForm.numtyping.value = len;
                 });
             });
         });
 
-    function toggleReadOnly( isReadOnly ) {
-        editor.setReadOnly( isReadOnly );
-    }
-
-    $(document).ready(function(){
-        $(window).bind("beforeunload", function(){ return(false); });
-    });
-
-
-    function onsubmitform() {
-        if($('input[type=checkbox]:checked').length == 0)//******same method on the user-end
-        {
-            alert( "Please choose all applicable strategies to proceed" );
-            return false;
-        }else {
-            // grab the value of the hidden donecheck element
-            $(window).unbind('beforeunload');
-            var d = new Date();
-            document.strategyq.starttime.value = d.getTime();
-
+    function toggleReadOnly() {
+        if ( CKEDITOR.status == 'loaded' ) {
+            // The API can now be fully used.
+            CKEDITOR.instances["email1"].setReadOnly(true);
         }
     }
 
-    function Q1_click(){
-        $("#Button1").hide();
+    function onsubmitform() {
+        if( document.myForm.impersonation.value == false  )
+        {
+            alert( "Please answer the First question" );
+            return false;
+        }
+
+        if( document.myForm.tone.value == false  )
+        {
+            alert( "Please answer the Second question" );
+            return false;
+        }
+
+        if(!Validatecheckbox('strategies')){
+            alert('Please report your strategies.');
+            return false
+        }
+
+        if(!Validatecheckbox('informationused')){
+            alert('Please report what information you used from the profile.');
+            return false
+        }
+
+
+        if (slider_flag ==0){
+            alert('Please report your confidence');
+            return false;
+        }
+        var d = new Date();
+        document.myForm.submittime.value = d.getTime();
+
+    }
+
+    function Validatecheckbox(checkboxid) {
+        var checked = 0;
+ 
+        //Reference the Table.
+        var tblFruits = document.getElementById(checkboxid);
+ 
+        //Reference all the CheckBoxes in Table.
+        var chks = tblFruits.getElementsByTagName("INPUT");
+ 
+        //Loop and count the number of checked CheckBoxes.
+        for (var i = 0; i < chks.length; i++) {
+            if (chks[i].checked) {
+                checked++;
+            }
+        }
+ 
+        if (checked == 0) {
+            return false;
+        }else{
+            return true;
+        }
+    };
+
+    function Q2_click(){
+        $("#Button2").hide();
+        $("#targetinfo").hide();
+        $("#linkintro").hide();
         var parent = $("#questions");
         var divs = parent.find("label");
-        console.log('pass');
         while (divs.length) {
             parent.append(divs.splice(Math.floor(Math.random() * divs.length), 1)[0]);
         }
-
-        //time stamp
-        $(window).unbind('beforeunload');
+//time stamp
         var d = new Date();
-        document.myForm.endtime.value = d.getTime();
-
+        document.myForm.q2.value = d.getTime();
         $("#strategyq").show();
         $("#launchB").show();
         toggleReadOnly();
     }
-    
+
+    function Q0_click(){
+        $("#Button0").hide();
+        $("#targetinfo").show();
+        var d = new Date();
+        document.myForm.q0.value = d.getTime();
+
+    }
+
+    function Q1_click(){
+        $("#Button1").hide();
+        $("#Email").show();
+        $("#Button2").show();
+        count_time();
+        var d = new Date();
+
+        document.myForm.q1.value = d.getTime();
+
+    }
+
 </script>
 
+<script>
+(function (global) {
+
+if(typeof (global) === "undefined")
+{
+    throw new Error("window is undefined");
+}
+
+var _hash = "!";
+var noBackPlease = function () {
+    global.location.href += "#";
+
+    // making sure we have the fruit available for juice....
+    // 50 milliseconds for just once do not cost much (^__^)
+    global.setTimeout(function () {
+        global.location.href += "!";
+    }, 50);
+};
+
+// Earlier we had setInerval here....
+global.onhashchange = function () {
+    if (global.location.hash !== _hash) {
+        global.location.hash = _hash;
+    }
+};
+
+global.onload = function () {
+    
+    noBackPlease();
+};
+
+})(window);
+</script>
 <body>
-<p id="demo"></p>
+
+
 <form method="post" name="myForm" id="myForm" action="Scoring.php" onsubmit="return onsubmitform();">
-    <input type="hidden" id="starttime" name="starttime" value="">
-    <input type="hidden" name="endtime" value="">
+    <input type="hidden" id="submittime" name="submittime" value="">
+    <input type="hidden" id="loadtime" name="loadtime" value="">
+    <input type="hidden" id="q0" name="q0" value="">
+    <input type ="hidden" id = "q1" name ="q1" value = "">
+    <input type="hidden" name="q2" value="q2">
     <input type="hidden" id="keystroke" name="keystroke" value="">
     <input type="hidden" id="numtyping" name="numtyping" value="">
+    <input type="hidden" id ="slider1_data" name="slider1_data" value="">
 
-    <!--Title and score part of the page -->
-    <div name="wrapper" id="wrapperC">
-        <h1>Phishing Attacker Console</h1>
-        <label id="Instruction0" style="color: Red;font-size:LARGE;font-weight: bold; font-style: italic " ><?php if($_SESSION['Trial']==1) {echo "(This is a practice trial)";} ?></label>
-        <p>Goal for this Trial: <?php echo $goaltext;?></p>
+<div class="header">
+    <h1 style='text-align: center;'>Phishing Attacker Console</h1>
+    <div name="goal" id="wrapper">
+
+        <label id="Instruction0" style="color: Red;font-size:LARGE;font-weight: bold; font-style: italic " ><?php if($attacker->getTrial()==1) {echo "(This is a practice trial)";} elseif ($attacker->getTrial()==2){echo "(Your attack starts!)";} ?></label>
+        <p> Trial number: <?php echo($attacker->getTrial());?></p>
+        <p><b>Goal for this Trial:</b><?php echo $goaltext;?></p>
+        <div id="wrapper">
+            <button type="button" id="Button0" class="btn-style" onclick="Q0_click(); return false;" style="font-size: large">Continue</button>
+        </div>
+        
+    </div>
+
+    <div id="wrapper">
+
+    <div id = "targetinfo" name = "targetinfo" style="display: none;" style="margin:0px;">
         <h2>Target Information:</h2>
-        <p><?php echo $targetinfo;?></p>
+        <table>
+            <br>
+                <tr>
+                <?php 
+                for ($i = 0;$i<$profile_type;$i++){
+                    echo('<th>');
+                    echo($infolist[$i]);
+                    echo('</th>');
+                }
+                echo('</tr><tr>');
+                for ($i = 0;$i<$profile_type;$i++){
+                    echo('<td>');
+                    echo($info[$infolist[$i]]);
+                    echo('</td>');
+                }
+                ?>
+                </tr>
+        </table>
+
+        <div class="wrapper">
+            <button type="button" id="Button1" class="btn-style" onclick="Q1_click(); return false;" style="font-size: large">Continue</button>
+        </div>
     </div>
-
-
+    </div>
+</div>
     <!--Email part of the page -->
-    <div name="wrapper" id="wrapper">
-        <label id="MoneyYouHave" style="font-size: large">Total points You Have: </label><i>(Min=0, Max=4000)</i>
-        <div id="bar_blank" style="width: 300px;">
-            <div id="bar_color" style="width:<?php echo (($global_percent/100)*300); ?>px">
-                <label id="Capitalval" style="color: white" ><?php echo $Current_Capital; ?></label>
-            </div>
-        </div>
-        <label id="Instruction1" style="color: Red;font-size:Medium;font-weight: bold; font-style: italic " ><?php if($Practice==1) {echo "This bar will tell you how much points you have accumulated(min and max possible is also shown for reference)";} ?></label>
-
-        <input type="hidden" name="Capital" id="Capital" value="<?php echo $Current_Capital; ?>"/>
-        <br /><br />
-        <label name="Subjectline" id="Subjectline" style="font-size:medium;font-weight: bold">Subject:</label> <input type="text" name="Subject" id="Subject" style="width: 500px; border-style: solid; border-width: medium" value="<?php echo $SubjectText; ?>" > <label id="Instruction" style="color: Red;font-size:Medium;font-weight: bold; font-style: italic " ><?php if($Practice==1) {echo "<---- Edit the subject line of the email here";} ?></label><br>
-        <textarea name="email1" id="email1" rows="50" cols="150" class="ckeditor"> <?php echo $EmailText
-         #presetting email content?> </textarea> <label id="Instruction" style="color: Red;font-size:large;font-weight: bold; font-style: italic " ><?php if($attacker->getTrial()==1) {echo "Edit the main body of the email here. You can use the formatting options available at the top of the box.";} ?></label>
-        <!-- <script type="text/javascript">
-            CKEDITOR.replace( 'email1' );
-        </script> -->
-        <label id="Instruction5" style="color: green;font-size:large;font-weight: bold; font-style: italic " ><?php if($Practice==1) {echo "You can double click the link inside the email and use the popup to edit the text. Don't worry about the actual link address";} ?></label><br>
-        <?php if($Practice==1) {echo '<IMG BORDER="1" SRC="Tutorial_Image.png" height="100" width="300"  />';} ?>
-        <div name="wrapperC">
-        <br /> <button type="button" id="Button1" onclick="Q1_click(); return false;" style="font-size: large">Submit</button>
-        </div>
-        <a href="Templete.php">Want to change another Templete?</a><br>
-        <a href="profile.php" target="_top">Target Social Profile</a>
+    <div id="wrapperC" style="font-size: 20px;color: Red;">
+       <b> <p id="demo"></p></b>
     </div>
 
+
+<div name = "Email" id ="Email"  style="display: none;">
+<div name = "wrapperC" id = "wrapperC">    
+    <label id="MoneyYouHave" style="font-size: large">Total points You Have: </label><i>(Min=0, Max=10000)</i>
+    <div id="bar_blank" style="width: 300px;margin:0px">
+        <div id="bar_color" style="width:<?php echo (($global_percent/100)*300); ?>px">
+            <label id="Capitalval" style="color: white" ><?php echo $Current_Capital; ?></label>
+        </div>
+    </div>
+    <label id="Instruction1" style="color: Red;font-size:Medium;font-weight: bold; font-style: italic " ><?php if($attacker->getTrial()==1) {echo "This bar will tell you how much points you have accumulated(min and max possible is also shown for reference)";} ?></label>
+
+    <input type="hidden" name="Capital" id="Capital" value="<?php echo $Current_Capital; ?>"/>
+    <br /><br />
+    <label name="Subjectline" id="Subjectline" style="font-size:medium;font-weight: bold">Subject:</label> <input type="text" name="Subject" id="Subject" style="width: 500px; border-style: solid; border-width: medium" value="<?php echo $SubjectText; ?>" > <label id="Instruction" style="color: Red;font-size:Medium;font-weight: bold; font-style: italic " ><?php if($attacker->getTrial()==1) {echo "<---- Edit the subject line of the email here";} ?></label><br>
+    <textarea name="email1" id="email1" rows="50" cols="150" class="ckeditor"> <?php echo $EmailText
+        #presetting email content?> </textarea> <label id="Instruction" style="color: Red;font-size:large;font-weight: bold; font-style: italic " ><?php if($attacker->getTrial()==1) {echo "Edit the main body of the email here. You can use the formatting options available at the top of the box.";} ?></label>
+    <label id="Instruction5" style="color: green;font-size:large;font-weight: bold; font-style: italic " ><?php if($attacker->getTrial()==1) {echo "You can double click the link inside the email and use the popup to edit the text. Don't worry about the actual link address";} ?></label><br><br>
+    <?php
+    if ($attacker->getTrial()==1){
+        echo "<center><img id = 'linkintro' name = 'linkintro'src=\"URL_Editing_GIF.gif\" style=\"width:600px;height:388px;\"></center>";
+    }?>
+</div>
+</div>
+</div>
+        <div id = "wrapper">
+            <button type="button" id="Button2" class="btn-style" style="display: none;text-align:center;" onclick="Q2_click(); return false;">Submit</button>
+        </div>
+    
+        <div id = "wrapperC">
+            
     <!-- Strategy Query -->
-    <div id="strategyq" name="strategyq" style="display: none;">
-       <h2 style="text-align: left;">Select all applicable strategies you have employed in this phishing attack</h2>
-         <div id="questions" name="questions">
-            <label style="font-size: medium;"> <input id="C_1" name="checkboxes[]" type="checkbox" value="Deadline" />Deadlines<br /></label>
-            <label style="font-size: medium;"> <input id="C_2" name="checkboxes[]" type="checkbox" value="Positive" />Positive emotion (e.g., curiosity, surprise, excitement)<br /></label>
-            <label style="font-size: medium;"> <input id="C_3" name="checkboxes[]" type="checkbox" value="Negative" />Negative emotion (e.g., fear, panic, threat)<br /></label>
-            <label style="font-size: medium;"> <input id="C_4" name="checkboxes[]" type="checkbox" value="Authority" />Pretend to be a government/legal/workplace authority<br /></label>
-            <label style="font-size: medium;"> <input id="C_5" name="checkboxes[]" type="checkbox" value="Friend" />Pretend to be a friend/colleague/acquaintance/relative<br /></label>
-            <label style="font-size: medium;"> <input id="C_6" name="checkboxes[]" type="checkbox" value="Interest" />Pretend to have shared interest (work or activity)<br /></label>
-            <label style="font-size: medium;"> <input id="C_7" name="checkboxes[]" type="checkbox" value="Failure" />Inform problem/failure/loss<br /></label>
-            <label style="font-size: medium;"> <input id="C_8" name="checkboxes[]" type="checkbox" value="Deal" />Offer deal/lottery/reward<br /></label>
-            <label style="font-size: medium;"> <input id="C_9" name="checkboxes[]" type="checkbox" value="IllGains" />Pretend to provide reminder/update/notification<br /></label>
-            <label style="font-size: medium;"> <input id="C_10" name="checkboxes[]" type="checkbox" value="IllMaterial" />Offer illegal material (e.g., pornography, drugs)<br /></label>
-            <label style="font-size: medium;"> <input id="C_11" name="checkboxes[]" type="checkbox" value="Opportunity" />Present new opportunity (job, product or service)<br /></label>
-            <label style="font-size: medium;"> <input id="C_12" name="checkboxes[]" type="checkbox" value="RHelp" />Request help/favor<br /></label>
-            <label style="font-size: medium;"> <input id="C_13" name="checkboxes[]" type="checkbox" value="OHelp" />Offer help/assistance<br /></label>
-            <label style="font-size: medium;"> <input id="C_14" name="checkboxes[]" type="checkbox" value="Other" />Other<br /></label>
+    <div id="strategyq" name="strategyq" style="display: none;" onsubmit="return onsubmitform();">
+    <h2 style="text-align: left;">Answer the following questions about the phishing email you have created</h2>
+    <h3 style="text-align: left;">Select the <u>impersonation</u> you have employed in the attack</h3>
+         <div id="question1" name="question1">
+            <label style="font-size: medium;"> <input type="radio" id="impersonation" name="impersonation"  value=1 /> &nbsp; Pretended to be a government/law enforcement personnel<br /></label><br>
+            <label style="font-size: medium;"> <input type="radio" id="impersonation" name="impersonation" value=2 />&nbsp; Pretended to be a spouse/partner/relative/friend/acquaintance<br /></label><br>
+            <label style="font-size: medium;"> <input type="radio" id="impersonation" name="impersonation" value=3 />&nbsp; Pretended to be a workplace colleague/supervisor<br /></label><br>
+            <label style="font-size: medium;"> <input type="radio" id="impersonation" name="impersonation" value=4 />&nbsp; Pretended to be a software automation (automatic reminders or notification)<br /></label><br>
+            <label style="font-size: medium;"> <input type="radio" id="impersonation" name="impersonation" value=5 />&nbsp; Pretended to be an IT/tech expert (e.g., email from the technology office at workplace)<br /></label><br>
+            <label style="font-size: medium;"> <input type="radio" id="impersonation" name="impersonation" value=6 />&nbsp; Pretended to be from a commercial organization (e.g., bank, stores, shopping websites)<br /></label><br>
+            <label style="font-size: medium;"> <input type="radio" id="impersonation7" name="impersonation" value=7 />&nbsp; Other<br /></label><br>
         </div>
-        <h2 style="text-align: left;">Did you use the information directly or undirectly?
-        <div id ="metacognition" name = "metacognition">
-            <label style="font-size: medium;"><input type="radio" name="info" value=0>Directly</label><br>
-            <label style="font-size: medium;"><input type="radio" name="info" value=1>Undirectly</label><br>
+<br>
+        <h2 style="text-align: left;">Select the applicable <u>emotional manipulation</u> you have employed in the attack</h2>
+        <div id ="question2" name = "question2">
+            <label style="font-size: medium;"><input type="radio" name="tone" id = "tone" value=1>&nbsp;Positive emotion (happy/excite/cheer/proud/amaze/surprise)<br>
+            (e.g., a message that offer a deal/lottery/reward/job/promotion etc)</label><br>
+            <label style="font-size: medium;"><input type="radio" name="tone" id = "tone" value=2>&nbsp;Neutral emotion – This Messages is not likely to elicit any kind of strong emotion <br>
+            (e.g., a message that is informational)</label><br>
+            <label style="font-size: medium;"><input type="radio" name="tone" id = "tone" value=3>&nbsp;Negative emotion (sadness/anger/disgust/fear/guilt/shame)<br>
+            (e.g., a message that is threatening or inform a problem/failure/loss/deadline)
+            </label><br>
+
         </div>
-        <h2 style="text-align: left;">How confident are you on accomplishing the goal with this attempt
-        <div id ="metacognition" name = "metacognition">
-            <label style="font-size: medium;"><input type="radio" name="selfeval" value=1>No Confidence</label><br>
-            <label style="font-size: medium;"><input type="radio" name="selfeval" value=2>Medium Confidence</label><br>
-            <label style="font-size: medium;"><input type="radio" name="selfeval" value=3>Confidence</label><br>
-            <label style="font-size: medium;"><input type="radio" name="selfeval" value=4>Highly Confidence</label><br>
+<br>
+       <h2 style="text-align: left;">Select all the applicable <u>strategies</u> you have employed in this attack. </h2>
+       <h3>This message intends to deceive and influence the target by:</h3>
+        <div id="strategies" name="strategies">
+            <label style="font-size: medium;"> <input id="C_1" name="checkboxes[]" type="checkbox" value="Offer" />&nbsp;Offering something (e.g., offering reward) </label><br />
+            <label style="font-size: medium;"> <input id="C_2" name="checkboxes[]" type="checkbox" value="Followup" />&nbsp;Pretending to follow-up on an earlier communication</label><br>
+            <label style="font-size: medium;"> <input id="C_3" name="checkboxes[]" type="checkbox" value="Threaten" />&nbsp;Threatening with unfavorable consequences (e.g., disclosing websites visited to police)</label><br>
+            <label style="font-size: medium;"> <input id="C_4" name="checkboxes[]" type="checkbox" value="Failure" />&nbsp;Informing a problem/failure and extending help (e.g., hacked account)</label><br>
+            <label style="font-size: medium;"> <input id="C_5" name="checkboxes[]" type="checkbox" value="Authority" />&nbsp;Appearing to be from a person or institution of authority (e.g., CEO, IRS, FBI, CDC, supervisor)</label><br>
+            <label style="font-size: medium;"> <input id="C_6" name="checkboxes[]" type="checkbox" value="Peers" />&nbsp;Informing other people, often peers, had already taken this action (e.g., 80% of your friends have updated to this new version)</label><br>
+            <label style="font-size: medium;"> <input id="C_6" name="checkboxes[]" type="checkbox" value="Time" />&nbsp;Informing about a limited offer or resource or time (e.g., limited offer / deadline)</label><br>
+            <label style="font-size: medium;"> <input id="C_6" name="checkboxes[]" type="checkbox" value="Pretend" />&nbsp;Pretending to be a regular message (personal or work-related)</label><br>
+            <label style="font-size: medium;"> <input id="C_6" name="checkboxes[]" type="checkbox" value="Interest" />&nbsp;Trying to be familiar or desirable in terms of shared interest, belief or background</label> <br>
+            <label style="font-size: medium;"> <input id="C_6" name="checkboxes[]" type="checkbox" value="Other" />&nbsp;None of the above</label><br>
+        </div>
+<br>
+        <h2 style="text-align: left;">Select all applicable information you have used to <u>personalize</u> the attack?</h2><h3> Select all that apply. </h3>
+         <div id="informationused" name="informationused">
+        
+        <?php
+        for ($i = 0;$i<$profile_type;$i++){
+            echo('<label style="font-size: medium;">');
+            echo('<input id="'.$infolist[$i].'" name="checkboxes1[]" type="checkbox" value="'.$infolist[$i].'"/>&nbsp;'.$infolist[$i]);
+            echo('</label><br>');
+        }
+        ?>
+            
+        <label style="font-size: medium;"> <input id="C_41" name="checkboxes1[]" type="checkbox" value="None" />&nbsp;None<br /></label>
         </div>
 
+        <h2 style="text-align: left;">How confident are you on accomplishing the goal with this attempt?</h2>
+        <div id ="metacognition" name = "metacognition">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+        <input id="selfeval" type="text" name = "selfeval"
+        style="width:700px;"
+        data-slider-ticks="[50, 62.5,75 , 87.5, 100]" 
+        data-slider-ticks-tooltip="true" 
+        ticks_positions="[0, 25, 50, 75, 100]"           
+        data-slider-ticks-labels='["Not Confident at all", "Slightly Confident", "Somewhat Confident","Fairly Confident","Fully Confident"]'
+        />
+<br>
+        </div>
         <br/>
         <!--<button id="Button2" onclick="Q2_click(); return false;" style="font-size: large">Submit</button>-->
     </div>
 
     <!--Final Launch Button -->
-    <div id="launchB" name="LaunchB" style="display: none;">
-        <input type="submit" class="btn-style" name="submit" value="Launch"/>
-        <br />  <label id="Instruction4" style="color: Red;font-size:large;font-weight: bold; font-style: italic " ><?php if($Practice==1) {echo "Click this button to record the strategy and launch the phishing email attack during each trial";} ?></label>
+    <div id="launchB" name="LaunchB" style="display: none;" >
+        <center><input type="submit" class="btn-style" name="submit" value="Launch"/></center>
+        <br />  <label id="Instruction4" style="color: Red;font-size:large;font-weight: bold; font-style: italic " ><?php if($attacker->getTrial()==1) {echo "Click this button to record the strategy and launch the phishing email attack during each trial";} ?></label>
     </div>
     <!-- </div>-->
     <br /><br />
-
+</div>
 </form>
-
 </body>
+<script>
+var slider = new Slider("#selfeval", {
+    formatter: function(value) {
+    return 'Current value: ' + value;
+    },
+    ticks_tooltip: true,
+    ticks_positions: [0, 25, 50, 75, 100],
+
+    step: 0.01
+    });
+
+slider.on('change',function(){
+    console.log(slider.getValue());
+    slider_flag =1;
+    document.myForm.slider1_data.value = slider.getValue();
+})
+</script>
+
+
 </html>
+

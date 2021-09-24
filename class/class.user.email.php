@@ -13,250 +13,166 @@ class EmailClassification
 
     private $spearIndicator;
 
-    private $PairID;
-
     private $Response;
 
     private $Confidence;
 
     private $important;
 
-    private $workmail;
+    private $action;
 
-    private $social;
+    private $information;
 
-    private $authority;
 
-    private $status;
+    private $project;
 
-    private $marketing;
-
-    private $personal;
-
-    private $spam;
-
-    private $job;
+    private $meeting;
 
     private $deadline;
 
-    private $positive;
 
-    private $negative;
-
-    private $request;
-
-    private $offer;
-
-    private $grammar;
-
-  	private $clear;
+    private $spam;
 
     private $other;
 
     private $Starttime;
 
-    private $Endtime;
+	private $Endtime;
+	
+	private $Result;
 
   function __construct($RaterID)
   {
   	$this->RaterID = $RaterID;
   }
 
-  public function setspearIndicator($spearIndicator){
-    $this->spearIndicator = $spearIndicator;
-  }
-
   public function getRaterID(){
-    return $this->Rater;
-  }
+		return $this->RaterID;
+	}
 
-  public function setRaterID($RaterID){
-    $this->RaterID = $RaterID;
-  }
+	public function setRaterID($RaterID){
+		$this->RaterID = $RaterID;
+	}
 
-  public function getPhishID(){
-    return $this->PhishID;
-  }
+	public function getPhishID(){
+		return $this->PhishID;
+	}
 
-  public function setPhishID($PhishID){
-    $this->PhishID = $PhishID;
-  }
+	public function setPhishID($PhishID){
+		$this->PhishID = $PhishID;
+	}
 
-  public function getPairID(){
-    return $this->PairID;
-  }
+	public function setResult($Result){
+		$this->Result = $Result;
+	}
+	public function getspearIndicator(){
+		return $this->spearIndicator;
+	}
 
-  public function setPairID($PairID){
-    $this->PairID = $PairID;
-  }
+	public function setspearIndicator($spearIndicator){
+		$this->spearIndicator = $spearIndicator;
+	}
 
-  public function getResponse(){
-    return $this->Response;
-  }
+	public function getPairID(){
+		return $this->PairID;
+	}
 
-  public function setResponse($Response){
-    $this->Response = $Response;
-  }
 
-  public function getConfidence(){
-    return $this->Confidence;
-  }
+	public function getResponse(){
+		return $this->Response;
+	}
 
-  public function setConfidence($Confidence){
-    $this->Confidence = $Confidence;
-  }
+	public function setResponse($Response){
+		$this->Response = $Response;
+	}
 
-  public function getImportant(){
-    return $this->important;
-  }
+	public function getConfidence(){
+		return $this->Confidence;
+	}
 
-  public function setImportant($important){
-    $this->important = $important;
-  }
+	public function setConfidence($Confidence){
+		$this->Confidence = $Confidence;
+	}
 
-  public function getWorkmail(){
-    return $this->workmail;
-  }
+	public function getImportant(){
+		return $this->important;
+	}
 
-  public function setWorkmail($workmail){
-    $this->workmail = $workmail;
-  }
+	public function setImportant($important){
+		$this->important = $important;
+	}
 
-  public function getSocial(){
-    return $this->social;
-  }
+	public function getAction(){
+		return $this->action;
+	}
 
-  public function setSocial($social){
-    $this->social = $social;
-  }
+	public function setAction($action){
+		$this->action = $action;
+	}
 
-  public function getAuthority(){
-    return $this->authority;
-  }
+	public function getInformation(){
+		return $this->information;
+	}
 
-  public function setAuthority($authority){
-    $this->authority = $authority;
-  }
+	public function setInformation($information){
+		$this->information = $information;
+	}
 
-  public function getStatus(){
-    return $this->status;
-  }
+	public function getProject(){
+		return $this->project;
+	}
 
-  public function setStatus($status){
-    $this->status = $status;
-  }
+	public function setProject($project){
+		$this->project = $project;
+	}
 
-  public function getMarketing(){
-    return $this->marketing;
-  }
+	public function getMeeting(){
+		return $this->meeting;
+	}
 
-  public function setMarketing($marketing){
-    $this->marketing = $marketing;
-  }
+	public function setMeeting($meeting){
+		$this->meeting = $meeting;
+	}
 
-  public function getPersonal(){
-    return $this->personal;
-  }
+	public function getDeadline(){
+		return $this->deadline;
+	}
 
-  public function setPersonal($personal){
-    $this->personal = $personal;
-  }
+	public function setDeadline($deadline){
+		$this->deadline = $deadline;
+	}
 
-  public function getSpam(){
-    return $this->spam;
-  }
+	public function getSpam(){
+		return $this->spam;
+	}
 
-  public function setSpam($spam){
-    $this->spam = $spam;
-  }
+	public function setSpam($spam){
+		$this->spam = $spam;
+	}
 
-  public function getJob(){
-    return $this->job;
-  }
+	public function getOther(){
+		return $this->other;
+	}
 
-  public function setJob($job){
-    $this->job = $job;
-  }
+	public function setOther($other){
+		$this->other = $other;
+	}
 
-  public function getDeadline(){
-    return $this->deadline;
-  }
+	public function getStarttime(){
+		return $this->Starttime;
+	}
 
-  public function setDeadline($deadline){
-    $this->deadline = $deadline;
-  }
+	public function setStarttime($Starttime){
+		$this->Starttime = $Starttime;
+	}
 
-  public function getPositive(){
-    return $this->positive;
-  }
+	public function getEndtime(){
+		return $this->Endtime;
+	}
 
-  public function setPositive($positive){
-    $this->positive = $positive;
-  }
-
-  public function getNegative(){
-    return $this->negative;
-  }
-
-  public function setNegative($negative){
-    $this->negative = $negative;
-  }
-
-  public function getRequest(){
-    return $this->request;
-  }
-
-  public function setRequest($request){
-    $this->request = $request;
-  }
-
-  public function getOffer(){
-    return $this->offer;
-  }
-
-  public function setOffer($offer){
-    $this->offer = $offer;
-  }
-
-  public function getGrammar(){
-    return $this->grammar;
-  }
-
-  public function setGrammar($grammar){
-    $this->grammar = $grammar;
-  }
-
-  public function getClear(){
-    return $this->clear;
-  }
-
-  public function setClear($clear){
-    $this->clear = $clear;
-  }
-
-  public function getOther(){
-    return $this->other;
-  }
-
-  public function setOther($other){
-    $this->other = $other;
-  }
-
-  public function getStarttime(){
-    return $this->Starttime;
-  }
-
-  public function setStarttime($Starttime){
-    $this->Starttime = $Starttime;
-  }
-
-  public function getEndtime(){
-    return $this->Endtime;
-  }
-
-  public function setEndtime($Endtime){
-    $this->Endtime = $Endtime;
-  }
+	public function setEndtime($Endtime){
+		$this->Endtime = $Endtime;
+	}
 
   public function insertDB(){
     $db = Database::getInstance();
@@ -269,8 +185,11 @@ class EmailClassification
       $keys = $keys." ".$key.",";
       $values = $values."'".$value."',";
     }
-    $sql = $part1.'('.substr($keys, 0, -1).') VALUES ('.substr($values, 0,-1).');';
-    $conn->query($sql);
+	$sql = $part1.'('.substr($keys, 0, -1).') VALUES ('.substr($values, 0,-1).');';
+    if (!$conn->query($sql)) {
+      echo('There is something wrong here. Please take a screenshot of the error information and send to Daniel. Thank you.<br>');
+        printf("Error: %s\n", $conn->error);
+    }
     return $sql;
   }
 

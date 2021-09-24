@@ -2,28 +2,64 @@
 /**
   * 
   */
-include 'class.database.php';
 include 'class.user.php';
 class Attacker extends User
 {
 
 	private $ProfileType;
-  private $Trial=0;
+  private $Trial=1;
   private $TargetID1;
   private $TargetID2;
   private $TargetID3;
+  private $BNatLang;
+  private $Q1;
+  private $Q2;
+  private $Q3;
 
-	function __construct($ID,$TargetID1,$TargetID2,$TargetID3)
+  private $NatLang;#native language for user
+
+  private $LangProf; #language proficency 
+  
+	function __construct($ID)
 	{
 		parent::__construct($ID,'Attacker');
     $this->setProfileType();
-    $this->TargetID1 = $TargetID1;
-    $this->TargetID2 = $TargetID2;
-    $this->TargetID3 = $TargetID3;
+    $this->setGroupID($GroupID);
+    $this->setTargets();
+    #$this->TargetID1 = $TargetID1;
+    #$this->TargetID2 = $TargetID2;
+    #$this->TargetID3 = $TargetID3;
     #set profile_type;
-	}
-
+  }
   
+  public function setQ1($Q1){
+    $this->Q1 = $Q1;
+  }
+
+  public function setQ2($Q2){
+    $this->Q2 = $Q2;
+  }
+
+  public function setQ3($Q3){
+    $this->Q3 = $Q3;
+  }
+
+
+  public function setTargets(){
+    $db = Database::getInstance();
+    $conn = $db->getConnection(); 
+    $sql = 'SELECT * from GroupRel WHERE`AttackerID` = "'.$this->getUserID().'"';
+    $result = $conn->query($sql)->fetch_assoc();
+    $this->TargetID1 = $result['UserID1'];
+    $this->TargetID2 = $result['UserID2'];
+    $this->TargetID3 = $result['UserID3'];
+    $this->setGroupID($result['GroupID']);
+    $this->setEarn(1000);
+  }
+
+  public function setBNatLang($BNatLang){
+    $this->BNatLang = $BNatLang;
+  }
   public function setTargetID1($TargetID1){
     $this->TargetID1 = $TargetID1;
   }
@@ -48,9 +84,11 @@ class Attacker extends User
     return $this->TargetID3;
   }
 
+
   public function nextTrial(){
     $num = $this->Trial;
     $this->Trial = $num + 1;
+    $this->setEarn($this->getEarn()-100);
     return $this;
   }
 
@@ -58,23 +96,52 @@ class Attacker extends User
     return $this->Trial;
   }
 
-  private function setProfileType(){
+  public function getTargetprofile($ID){
+    $ID= 'User'.strval($ID);
+    $sql = "Select * from enduserprofile where ID ='".$ID."'";
     $db = Database::getInstance();
     $conn = $db->getConnection(); 
-    #print_r($conn);
-    $type = array('Facebook',"Twitter","Linkedin");
+    $result = $conn->query($sql);
+    return $result->fetch_assoc();
+  }
+
+  public function setNatLang($NatLang){
+    $this->NatLang = $NatLang;
+    return $this;
+  }
+
+  public function getNatLang(){
+    return $this->NatLang;
+  }
+
+  public function setLangProf($LangProf){
+    $this->LangProf = $LangProf;
+    return $this;
+  }
+
+  public function getLangProf(){
+    return $this->LangProf;
+  }
+
+
+  private function setProfileType(){
+   /* $db = Database::getInstance();
+    $conn = $db->getConnection(); 
+    $type = array('1','2','3');
     $sql = "SELECT ProfileType,COUNT(ProfileType)AS Frequency 
             FROM Attacker 
             GROUP BY ProfileType
             ORDER BY COUNT(ProfileType)";
     $result = $conn->query($sql);
-    if ($result->num_rows<=2){
+
+    if ($result->num_rows<3){
         $attack_type = $type[mt_rand(0,2)];
     }else {
       $attack_type = $result->fetch_assoc()['ProfileType'];
     }
     $this->ProfileType = $attack_type;
-    return $this;
+    */
+    $this->ProfileType = '3';#set experinment condition
   }   
 
   public function getProfileType(){
@@ -92,68 +159,54 @@ class Attacker extends User
     return $result;
   }
 
-  private function oldinsertDB(){
-    #insert attacker information in to DB
-    $result = $this->checkAttackersql();
-    if ($result->num_rows>0){
-      #the information existed already; update
-      $sql2 = "UPDATE `Attacker` SET `ProfileType`='".$this->ProfileType."',`Age`='".$this->getAge()."',`Gender`='".$this->getGender()."',`Job`='".$this->getJob()."',`Personality`='".$this->getPersonality()."',`GroupID`='".$this->getGroupID()."',`Earn`='".$this->getEarn()."' WHERE UserID='".$this->getUserID()."';";
-    }else{
-      #the information not exist; insert
-      $sql2 = "INSERT INTO `Attacker`(`UserID`, `ProfileType`, `Age`, `Gender`, `Job`, `Personality`, `GroupID`, `Earn`) VALUES ('".$this->getUserID()."','".$this->ProfileType."','".$this->getAge()."','".$this->getGender()."','".$this->getJob()."','".$this->getPersonality()."','".$this->getGroupID()."','".$this->getEarn()."');";
-    }
-    #$conn->query($sql2);
-  }
-
   public function insertDB(){
     $db = Database::getInstance();
     $conn = $db->getConnection(); 
     $result = $this->checkAttackersql();
-    print_r($result);
     if ($result->num_rows>0){
-      echo "1";
       $sql = $this->genSQLUdt();
     }else{
-      echo "2";
       $sql = $this->genSQLIN();
+    }    
+    if (!$conn->query($sql)) {
+      echo('There is something wrong here. Please take a screenshot of the error information and send to Daniel. Thank you.<br>');
+        printf("Error: %s\n", $conn->error);
     }
-    echo $sql;
-    #$conn->query($sql);
+    $this->updateTime();
   }
 
   private function genSQLIN(){
-    $array = parent::toArray();
-    $array = array_merge($array,get_object_vars($this));
-    #var_dump($array);
-    unset($array['Trial']);#to eliminate element from array
-    unset($array['Role']);#to eliminate element from array
-    #var_dump($array);
-    echo "<br>";
-    $part1 = "INSERT INTO `Attacker`";
-    $keys = "";
-    $values = "";
-    foreach ($array as $key => $value) {
-      $keys = $keys." ".$key.",";
-      $values = $values."'".$value."',";
-    }
-    $sql = $part1.'('.substr($keys, 0, -1).') VALUES ('.substr($values, 0,-1).');';
-    return $sql;
-  }
-
-  private function genSQLUdt(){
-    $array = parent::toArray();
-    $array = array_merge($array,get_object_vars($this));
-    unset($array['Trial']);#to eliminate element from array
-    unset($array['Role']);#to eliminate element from array
-    unset($array['UserID']);#to eliminate element from array
-    $part1 = "UPDATE `Attacker` SET";
-    $query = '';
-    foreach ($array as $key => $value) {
-      $query = $query." ".$key." = '".$value."',";
-    }
-    $sql = $part1.' '.substr($query, 0,-1)." WHERE UserID = '".$this->getUserID()."'";
-    return $sql;
-  }
+		$array = parent::toArray();
+		$array = array_merge($array,get_object_vars($this));
+		#var_dump($array);
+		unset($array['Trial']);#to eliminate element from array
+		unset($array['Role']);#to eliminate element from array
+		#var_dump($array);
+		$part1 ='INSERT INTO '.$this->getRole();
+		$keys = "";
+		$values = "";
+		foreach ($array as $key => $value) {
+		  $keys = $keys." ".$key.",";
+		  $values = $values."'".$value."',";
+		}
+		$sql = $part1.'('.substr($keys, 0, -1).') VALUES ('.substr($values, 0,-1).');';
+		return $sql;
+	  }
+	
+	  private function genSQLUdt(){
+		$array = parent::toArray();
+		$array = array_merge($array,get_object_vars($this));
+		unset($array['Trial']);#to eliminate element from array
+		unset($array['Role']);#to eliminate element from array
+		unset($array['UserID']);#to eliminate element from array
+		$part1 = "UPDATE ".$this->getRole()." SET";
+		$query = '';
+		foreach ($array as $key => $value) {
+		  $query = $query." ".$key." = '".$value."',";
+		}
+		$sql = $part1.' '.substr($query, 0,-1)." WHERE UserID = '".$this->getUserID()."'";
+		return $sql;
+	  }
 }
 ?>
 
