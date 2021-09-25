@@ -1,6 +1,6 @@
 
 $(function(){
-	var socket = io.connect('http://54.213.253.53:3000')
+	var socket = io.connect('http://'+window.location.hostname+':3000')
 	//buttons and inputs
 	var username = $("#username")
 	var send_username = $("#send_username")

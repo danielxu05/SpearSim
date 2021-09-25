@@ -14,11 +14,11 @@ app.get('/',(req,res)=>{
 server = app.listen(3000)
 
 var db_config = {
-    host: "localhost",
-user: "root",
-password: "BRevoCXTOoP3",
-port:'3306',
-database:"phishing",
+    host: "",
+user: "",
+password: "",
+port:'',
+database:"",
 socketPath: '/opt/bitnami/mysql/tmp/mysql.sock'
 };
 var con;
