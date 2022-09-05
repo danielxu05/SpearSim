@@ -24,8 +24,8 @@ class Attacker extends User
 	{
 		parent::__construct($ID,'Attacker');
     $this->setProfileType();
-    $this->setGroupID($GroupID);
-    $this->setTargets();
+#    $this->setGroupID($GroupID);
+#    $this->setTargets();
     #$this->TargetID1 = $TargetID1;
     #$this->TargetID2 = $TargetID2;
     #$this->TargetID3 = $TargetID3;
@@ -162,17 +162,20 @@ class Attacker extends User
   public function insertDB(){
     $db = Database::getInstance();
     $conn = $db->getConnection(); 
+
     $result = $this->checkAttackersql();
+
     if ($result->num_rows>0){
       $sql = $this->genSQLUdt();
     }else{
       $sql = $this->genSQLIN();
     }    
+#    print_r($sql);
     if (!$conn->query($sql)) {
       echo('There is something wrong here. Please take a screenshot of the error information and send to Daniel. Thank you.<br>');
         printf("Error: %s\n", $conn->error);
     }
-    $this->updateTime();
+#    $this->updateTime();
   }
 
   private function genSQLIN(){
@@ -193,7 +196,7 @@ class Attacker extends User
 		return $sql;
 	  }
 	
-	  private function genSQLUdt(){
+  private function genSQLUdt(){
 		$array = parent::toArray();
 		$array = array_merge($array,get_object_vars($this));
 		unset($array['Trial']);#to eliminate element from array
