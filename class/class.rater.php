@@ -52,6 +52,10 @@ class Rater extends User
       return $this->Enduser;
     }
 
+    public function setEnduser($Enduser){
+      $this->Enduser = $Enduser;
+    }
+
     public function getTrial(){
       return $this->Trial;
     }
